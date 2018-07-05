@@ -1,0 +1,370 @@
+# MIME type to file extension mapping file.
+#
+# This is a whitespace-separated values file where blank lines and text
+# following "#" is ignored.
+#
+# Each line is a separate entry with the following format:
+# <mime type> <file extension> ...
+
+#
+# These definitions are considered non-standard by IANA
+#
+application/x-acad             dwg
+application/x-ami
+application/x-amipro
+application/x-arj-compressed   arj 
+application/x-autocad          dwg
+application/x-bcpio            bcpio
+application/x-bz2
+application/x-captivate
+application/x-compress		z
+application/x-compressed 	tgz 
+application/x-cpio		cpio
+application/x-csh		csh
+application/x-dvi		dvi
+application/x-dwg		dwg
+application/x-eloquent-studioproject
+application/x-emf		emf
+application/x-exe             	exe
+application/x-gtar            	gtar
+application/x-gzip		gz zip
+application/x-gzip-compressed 	zip
+application/x-hdf              	hdf
+application/x-iphone 		iii 
+application/x-javascript	js
+application/x-jmp-data
+application/x-js-taro		jtd jtt
+application/x-latex		latex
+application/x-lotus-dxl
+application/x-macbinary		bin                  
+application/x-maker
+application/x-mif		mif
+application/x-msdownload
+application/x-msexcel		xls
+application/x-msmetafile
+application/x-mspowerpoint	ppt
+application/x-mspublisher
+application/x-netcdf		nc cdf
+application/x-outlook-msg	msg
+application/x-pdf		pdf
+application/x-perfmon		pma pmc pml pmr pmw 
+application/x-perl		perl
+application/x-pkcs7-signature
+application/x-quattro
+application/x-quattropro
+application/x-quattroproj
+application/x-rar-compressed   rar rev r00 r01
+application/x-rpt
+application/x-sh
+application/x-sh               sh
+application/x-shar             shar
+application/x-shockwave-flash
+application/x-stuffit
+application/x-sv4cpio          sv4cpio
+application/x-sv4crc           sv4crc
+application/x-tar              tar
+application/x-tcl              tcl
+application/x-tex              tex
+application/x-texinfo          texinfo texi
+application/x-troff            t tr roff
+application/x-troff-man        man
+application/x-troff-me         me
+application/x-troff-ms         ms
+application/x-unknown-content-type-WinZip
+application/x-url             url
+application/x-ustar	       ustar
+application/x-visio
+application/x-wais-source      src
+application/x-wordperfect		
+application/x-wordperfect4.2	wpf
+application/x-wordperfect5.1j
+application/x-wordperfect5e
+application/x-wordperfect6.0	wpd
+application/x-wordperfect6.1
+application/x-wordperfect6.1	wpd
+application/x-wordperfect6e
+application/x-wordperfect7
+application/x-wordperfectmac
+application/x-zip-compressed   zip
+application/x-zip-encoded     zip
+audio/x-adpcm                snd 
+audio/x-aiff                aif aifc aiff 
+audio/x-au                au 
+audio/x-gsm                gsd gsm 
+audio/x-jam                jam 
+audio/x-liveaudio                lam 
+audio/x-mid                mid midi 
+audio/x-midi                mid midi 
+audio/x-mod                mod 
+audio/x-mpeg                   mp2 mp3
+audio/x-mpeg-3                 mp3
+audio/x-mpequrl                m3u 
+audio/x-ms-wma
+audio/x-nspaudio                la lma 
+audio/x-pn-realaudio                ra ram rm rmm rmp 
+audio/x-pn-realaudio-plugin                ra rmp rpm 
+audio/x-realaudio                ra 
+audio/x-wav                wav 
+image/x-canon-cr2	       cr2
+image/x-cmu-raster             ras
+image/x-dwg                    dwg
+image/x-dwg                dwg dxf svf
+image/x-emf                emf
+image/x-icon                   ico
+image/x-jg                art 
+image/x-jps                jps 
+image/x-me10                mi
+image/x-MS-bmp               bmp
+image/x-niff                nif niff 
+image/x-nikon-nef	       nef
+image/x-pcx                pcx 
+image/x-pict                pct 
+image/x-png                   png
+image/x-portable-anymap                pnm 
+image/x-portable-bitmap        pbm             
+image/x-portable-graymap       pgm
+image/x-portable-pixmap        ppm
+image/x-quicktime                qif qti qtif 
+image/x-rgb                    rgb
+image/x-tiff                tif tiff 
+image/x-windows-bmp                bmp 
+image/x-xbitmap                xbm
+image/x-xbm                xbm 
+image/x-xpixmap                pm xpm 
+image/x-xwd                xwd 
+image/x-xwindowdump                xwd 
+text/x-setext                  etx
+text/x-sgml                   sgml
+text/x-vcard
+video/x-flv                    flv
+video/x-gl                gl 
+video/x-isvideo                isu 
+video/x-motion-jpeg                mjpg 
+video/x-mpeg                mp2 mp3 
+video/x-mpeq2a                mp2 
+video/x-ms-asf                 asf asx
+video/x-ms-asf-plugin                asx 
+video/x-ms-wmv                 wmv
+video/x-msvideo                avi
+video/x-qtc                qtc 
+video/x-scm                scm 
+video/x-sgi-movie                movi mv movie
+
+
+#
+# The following is consider part of the IANA standards
+#
+application/activemessage
+application/andrew-inset                       
+application/applefile
+application/atomicmail                         
+application/dca-rft                            
+application/dec-dx                             
+application/download
+application/force-download
+application/gzip-compressed    gz gzip
+application/iges               igs
+application/java               java
+application/java-archive
+application/mac-binhex40
+application/macwriteii
+application/mindmap
+application/ms-excel          xls
+application/ms-tnef
+application/msaccess           mdb
+application/msexcel           xls
+application/msword             doc dot W6BN 
+application/msword-template
+application/news-message-id                    
+application/news-transmission
+application/octet-stream       bin
+application/oda                oda
+application/pdf                pdf
+application/postscript         ai eps ps
+application/powerpoint
+application/ppt
+application/remote-printing
+application/rtf                rtf
+application/slate
+application/visio
+application/vnd.calcomp                906 pra
+application/vnd.filemaker
+application/vnd.framemaker
+application/vnd.framemaker-book
+application/vnd.hp-HPGL                hpg plt
+application/vnd.lotus-1-2-3
+application/vnd.lotus-freelance
+application/vnd.lotus-notes
+application/vnd.microplanner
+application/vnd.mindjet.mindmanager
+application/vnd.ms-access
+application/vnd.ms-bitmap
+application/vnd.ms-excel       xls xlb XLS5
+application/vnd.ms-excel-template
+application/vnd.ms-excel.sheet.binary.macroEnabled.12				xlsb
+application/vnd.ms-excel.sheet.macroEnabled.12					xlsm
+application/vnd.ms-excel
+application/vnd.ms-outlook                msg 	
+application/vnd.ms-outlook-message        msg
+application/vnd.ms-outlook-template       msg
+application/vnd.ms-powerpoint  ppt pot SLD3
+application/vnd.ms-powerpoint.presentation.macroEnabled.12			pptm
+application/vnd.ms-powerpoint ppt
+application/vnd.ms-pps         pps
+application/vnd.ms-project     mpp
+application/vnd.ms-tnef
+application/vnd.ms-visio.viewer
+application/vnd.ms-word.document.macroEnabled.12				docm
+application/vnd.ms-word
+application/vnd.oasis.opendocument.text
+application/vnd.openxmlformats-officedocument.presentationml.presentation	pptx
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet		xlsx
+application/vnd.openxmlformats-officedocument.wordprocessingml.document		docx
+application/vnd.panorama
+application/vnd.photoshop
+application/vnd.quark-xpress
+application/vnd.sparxsystems.ea
+application/vnd.visio								vsd
+application/vnd.visio
+application/vnd.wavesoft
+application/wita
+application/wordperfect5.1		wp5
+application/xml               xml
+application/zip                zip
+
+# Various audio mimetypes	
+audio/3gpp                     3gp
+audio/aiff                aif aifc aiff 
+audio/basic                    au snd
+audio/it                it 
+audio/mid                rmi 
+audio/midi                kar mid midi 
+audio/mod                mod 
+audio/mpeg                m2a mp2 mpa mpg mpga 
+audio/mpeg3                    mp3
+audio/playlist                 m3u M3U
+audio/s3m                s3m 
+audio/tsp-audio                tsi 
+audio/tsplayer                tsp 
+audio/wav                wav 
+audio/xm                xm 
+
+# Various image formats
+image/bmp                bm bmp 
+image/cmu-raster                ras rast 
+image/fif                fif 
+image/g3fax                g3 
+image/gif                      gif GIFf
+image/ief                ief iefs 
+image/jpeg                jfif jpe jpeg jpg 
+image/pct
+image/pict                pic pict 
+image/pjpeg                jfif jpe jpeg jpg 
+image/png                png x-pn 
+image/svg+xml
+image/tif                     tif
+image/tiff                     tiff tif
+image/vasa                mcf 
+image/vnd.dwf
+image/vnd.dwg                dwg dxf svf 
+image/vnd.dxf
+image/vnd.fpx                fpx 
+image/vnd.ms-modi
+image/vnd.net-fpx                fpx 
+image/vnd.rn-realflash                rf 
+image/vnd.rn-realpix                rp 
+image/vnd.wap.wbmp                wbmp 
+image/vnd.xiff                xif 
+image/xbm                xbm 
+image/xpm                xpm 
+model/iges                igs
+
+# Email
+message/external-body
+message/news
+message/partial
+message/rfc822
+
+multipart/alternative
+multipart/appledouble
+multipart/digest
+multipart/mixed
+multipart/parallel
+
+# Text mimetypes
+text/css                      css
+text/csv                       csv
+text/html                      html htm
+text/mspg-legacyinfo
+text/plain                     txt TEXT
+text/richtext                  rtx
+text/sgml		       sgml sgm
+text/tab-separated-values      tsv
+text/webviewhtml
+text/xml                       xml xsl dtd
+
+# Various video mimetypes	
+video/3gpp                     3gp
+video/animaflex                afl 
+video/avi                avi 
+video/avs-video                avs 
+video/dl                dl 
+video/dvd                      vob
+video/fli                fli 
+video/gl                gl 
+video/mp4                      mp4
+video/mpeg                     vob m1v m2v mpa mpe mpeg mpg 
+video/msvideo                avi 
+video/quicktime                moov mov qt 
+video/vdo                vdo 
+video/vivo                viv vivo 
+video/vnd.rn-realvideo                rv 
+video/vnd.vivo                viv vivo 
+video/vosaic                vos 
+
+# Primary association: AutoCAD
+# Company: Autodesk, Inc.
+# File classification: Graphic
+# Reference: http://filext.com/file-extension/DWG
+application/acad               dwg
+application/autocad_dwg        dwg
+application/dwg                dwg
+image/vnd.dwg                  dwg
+drawing/dwg                    dwg
+
+# Open Office 2.0 Mimetypes
+application/vnd.oasis.opendocument.chart					odc 
+application/vnd.oasis.opendocument.chart-template 			otc
+application/vnd.oasis.opendocument.formula 					odf
+application/vnd.oasis.opendocument.formula-template			otf
+application/vnd.oasis.opendocument.graphics 				odg
+application/vnd.oasis.opendocument.graphics-template		otg
+application/vnd.oasis.opendocument.image 					odi
+application/vnd.oasis.opendocument.image-template 			oti
+application/vnd.oasis.opendocument.presentation 			odp
+application/vnd.oasis.opendocument.presentation-template 	otp
+application/vnd.oasis.opendocument.spreadsheet 				ods
+application/vnd.oasis.opendocument.spreadsheet-template 	ots
+application/vnd.oasis.opendocument.text 					odt
+application/vnd.oasis.opendocument.text-master 				odm
+application/vnd.oasis.opendocument.text-template 			ott
+application/vnd.oasis.opendocument.text-web 				oth
+application/vnd.oasis.opendocument.database  				odb
+application/vnd.openofficeorg.extension  					oxt
+
+#Open Office 1.0 Mimetypes.
+application/vnd.sun.xml.writer					sxw
+application/vnd.sun.xml.writer.template			stw
+application/vnd.sun.xml.calc					sxc
+application/vnd.sun.xml.calc.template			stc
+application/vnd.sun.xml.draw					sxd
+application/vnd.sun.xml.draw.template			std
+application/vnd.sun.xml.impress					sxi
+application/vnd.sun.xml.impress.template		sti
+application/vnd.sun.xml.writer.global			sxg
+application/vnd.sun.xml.math					sxm
+
+
+
+
+application/x-lotus-dxl	dxl
