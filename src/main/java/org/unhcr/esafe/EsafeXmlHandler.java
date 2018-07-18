@@ -1,11 +1,13 @@
 package org.unhcr.esafe;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -20,213 +22,395 @@ import org.xml.sax.helpers.DefaultHandler;
  *          Created 22 Jun 2018:01:25:39
  */
 
-public class EsafeXmlHandler extends DefaultHandler {
-	StringBuffer textBuffer;
-	private Writer out;
-	private String currentFileName;
-	private String extension;
-	private String objPath;
-	private String newName;
-	boolean isFileName = false;
-	boolean isMime = false;
-	boolean isObjPath = false;
-	boolean toFile = false;
+public final class EsafeXmlHandler extends DefaultHandler {
+	static final SAXParserFactory spf = SAXParserFactory.newInstance();
+	static {
+		spf.setNamespaceAware(true);
+	}
+	static final SAXParser saxParser;
+	static {
+		try {
+			saxParser = spf.newSAXParser();
+		} catch (ParserConfigurationException | SAXException excep) {
+			// TODO Auto-generated catch block
+			throw new IllegalStateException(
+					"Couldn't initialise SAX XML Parser.", excep);
+		}
+	}
+	private OutputHandler outHandler;
+	private final List<RecordDetails> details = new ArrayList<>();
+	private RecordBuilder recBuilder;
+	private String currEleName;
+	private final ProcessorOptions opts;
+	private File currentDir = new File(".");
 
-	public EsafeXmlHandler(boolean toFile) throws UnsupportedEncodingException {
-		this.toFile = toFile;
-		this.out = new OutputStreamWriter(System.out, "UTF8");
+	public EsafeXmlHandler(final ProcessorOptions opts) {
+		this.opts = opts;
 	}
 	// ===========================================================
 	// SAX DocumentHandler methods
 	// ===========================================================
 
-	public void setCurrentFile(File file) throws IOException {
-		if (this.toFile) {
-			File parent = file.getParentFile();
-			File output = new File(parent, file.getName() + ".fix");
-			this.out = new FileWriter(output);
+	public void processExports() throws IOException, SAXException {
+		for (File dirToParse : this.opts.toProcess) {
+			for (File child : dirToParse.listFiles()) {
+				if (child.isFile()
+						&& child.getName().toLowerCase().endsWith(".xml")) {
+					this.currentDir = child.getParentFile().getCanonicalFile();
+					this.details.clear();
+					if (this.opts.isToFile) {
+						this.outHandler = new OutputHandler(child);
+					} else {
+						this.outHandler = new OutputHandler();
+					}
+					saxParser.parse(child, this);
+				}
+			}
 		}
+
 	}
 
 	@Override
 	public void startDocument() throws SAXException {
-		emit("<?xml version='1.0' encoding='UTF-8'?>");
-		nl();
+		// Output the XML processing instruction
+		if (!this.opts.isEnhanced)
+			return;
+		this.outHandler.emit("<?xml version='1.0' encoding='UTF-8'?>");
+		this.outHandler.nl();
 	}
 
 	@Override
 	public void endDocument() throws SAXException {
-		try {
-			nl();
-			this.out.flush();
-		} catch (IOException e) {
-			throw new SAXException("I/O error", e);
+		if (!this.opts.isEnhanced)
+			return;
+		if (this.opts.isEnhanced) {
+			this.outHandler.nl();
+			this.outHandler.nl();
 		}
+		this.report();
 	}
 
 	@Override
 	public void startElement(String namespaceURI, String sName, // simple name
 			String qName, // qualified name
 			Attributes attrs) throws SAXException {
-		echoText();
-		String eName = sName; // element name
-		if ("".equals(eName))
-			eName = qName; // not namespaceAware
-		if (eName.equals("filename")) {
-			this.currentFileName = "";
-			this.isFileName = true;
-			return;
+		// Throw the text to output
+		if (this.opts.isEnhanced)
+			this.outHandler.echoText();
+		else
+			this.outHandler.voidBuffer();
+		// Get the current ele name
+		this.currEleName = deriveEleName(sName, qName);
+		if (this.isRecordEle()) {
+			this.recBuilder = new RecordBuilder();
 		}
-		if (eName.equals("mimetype")) {
-			this.isMime = true;
-		}
-		if (eName.equals("objectpath")) {
-			this.isObjPath = true;
-		}
-		emit("<" + eName);
-		if (attrs != null) {
-			for (int i = 0; i < attrs.getLength(); i++) {
-				String aName = attrs.getLocalName(i); // Attr name
-				if ("".equals(aName))
-					aName = attrs.getQName(i);
-				emit(" ");
-				emit(aName + "=\"" + attrs.getValue(i) + "\"");
-			}
-		}
-		emit(">");
+		if (this.opts.isEnhanced)
+			outputEleStart(this.outHandler, this.currEleName, attrs);
 	}
 
 	@Override
 	public void endElement(String namespaceURI, String sName, // simple name
 			String qName  // qualified name
 	) throws SAXException {
-		if (this.isFileName) {
-			this.currentFileName = this.textBuffer.toString();
-			this.textBuffer = null;
-			this.isFileName = false;
-			return;
+		this.currEleName = deriveEleName(sName, qName);
+		if (this.isRecordEle()) {
+			this.processRecord();
+		} else if (!"dataextract".equals(this.currEleName)) {
+			this.recBuilder.processEle(this.currEleName,
+					this.outHandler.getBufferValue());
 		}
-		if (this.isMime) {
-			this.isMime = false;
-			this.extension = MimeExtensionMapper
-					.getExtForMime(this.textBuffer.toString().trim());
-		}
-		if (this.isObjPath) {
-			this.isObjPath = false;
-			this.objPath = this.textBuffer.toString();
-		}
-		echoText();
-		String eName = sName; // element name
-		if ("".equals(eName))
-			eName = qName; // not namespaceAware
-		if (eName.equals("record")) {
-			emit("  <filename>");
-			if (!this.currentFileName.isEmpty()) {
-				String newFileName = addExtension(this.currentFileName,
-						this.extension);
-				emit(newFileName);
-				File originalFile = new File(
-						findObjFileParent(new File("."), this.objPath),
-						this.currentFileName);
-				File renameTo = new File(originalFile.getParentFile(), newFileName);
-				if (originalFile.isFile() && !renameTo.exists()) {
-					System.out.println(
-							"Found Object File " + originalFile.getAbsolutePath());
-					System.out.println(
-							"Renaming Object File " + renameTo.getAbsolutePath());
-					originalFile.renameTo(renameTo);
-				}
+		if (this.opts.isEnhanced) {
+			this.outHandler.echoText();
+			this.outHandler.emit("</" + this.currEleName + ">");
+		} else
+			this.outHandler.voidBuffer();
+
+		this.currEleName = null;
+	}
+
+	private static String deriveEleName(final String sName,
+			final String qName) {
+		return ("".equals(sName)) ? qName : sName; // element name
+	}
+
+	private static void outputEleStart(final OutputHandler handler,
+			final String eleName, final Attributes attrs) throws SAXException {
+		handler.emit("<" + eleName);
+		if (attrs != null) {
+			for (int i = 0; i < attrs.getLength(); i++) {
+				String aName = attrs.getLocalName(i); // Attr name
+				if ("".equals(aName))
+					aName = attrs.getQName(i);
+				handler.emit(" ");
+				handler.emit(aName + "=\"" + attrs.getValue(i) + "\"");
 			}
-			this.currentFileName = "";
-			emit("</filename>");
-			nl();
 		}
-		emit("</" + eName + ">");
+		handler.emit(">");
 	}
 
 	@Override
 	public void characters(char buf[], int offset, int len) {
-		String s = new String(buf, offset, len);
-		if (this.textBuffer == null) {
-			this.textBuffer = new StringBuffer(s);
-		} else {
-			this.textBuffer.append(s);
-		}
+		String toAdd = new String(buf, offset, len);
+		this.outHandler.addToBuffer(toAdd);
 	}
 
-	// ===========================================================
-	// Utility Methods ...
-	// ===========================================================
-
-	// Display text accumulated in the character buffer
-	private void echoText() throws SAXException {
-		if (this.textBuffer == null)
-			return;
-		String s = "" + this.textBuffer;
-		emit(s);
-		this.textBuffer = null;
-	}
-
-	// Wrap I/O exceptions in SAX exceptions, to
-	// suit handler signature requirements
-	private void emit(String s) throws SAXException {
-		try {
-			this.out.write(s);
-			this.out.flush();
-		} catch (IOException e) {
-			throw new SAXException("I/O error", e);
-		}
-	}
-
-	// Start a new line
-	private void nl() throws SAXException {
-		String lineEnd = System.getProperty("line.separator");
-		try {
-			this.out.write(lineEnd);
-		} catch (IOException e) {
-			throw new SAXException("I/O error", e);
-		}
-	}
-
-	public static File findObjFileParent(final File currentDir,
+	public static File findObjParentDir(final File currentDir,
 			final String objPath) {
-		System.out.println("Checking objPath " + objPath);
-		String[] pathParts = objPath.split(":");
+		if (objPath == null)
+			return null;
+		String[] pathParts = objPath.split("\\\\");
+		return findExportParent(currentDir, pathParts);
+	}
 
-		File pathFile = currentDir;
+	public static File findExportParent(final File rootDir,
+			String[] pathParts) {
+		String rootName = getRootName(rootDir);
+		StringBuffer itemPath = new StringBuffer(rootDir.getAbsolutePath());
+		boolean isAppend = false;
 		for (String pathPart : pathParts) {
-			System.out.println("Checking pathPart " + pathPart);
-			pathFile = findPathDir(pathFile, pathPart);
+			if (isAppend) {
+				itemPath.append(File.separator);
+				itemPath.append(pathPart);
+			} else if (rootName.equals(pathPart)) {
+				isAppend = true;
+			}
 		}
-		return pathFile.isDirectory() ? pathFile : null;
+		return new File(itemPath.toString());
 	}
 
-	public static File findPathDir(final File currentDir,
-			final String pathPart) {
-		if ((currentDir == null) || !currentDir.isDirectory())
-			throw new IllegalArgumentException("Current dir wrong.");
-		for (File child : currentDir.listFiles()) {
-			System.out.println("Checking File " + child.getAbsolutePath());
-			if (child.getName().equals(pathPart))
-				return child;
-		}
-		return null;
+	private static String getRootName(final File root) {
+		String rootName = root.getName();
+		return (".".equals(rootName)) ? root.getParentFile().getName()
+				: rootName;
 	}
 
-	private static String addExtension(final String fileName,
-			final String ext) {
-		if (ext == null || ext.isEmpty()) {
-			return fileName;
+	private void report() {
+		RecordRenamer renamer = new RecordRenamer(this.currentDir);
+		for (RecordDetails record : this.details) {
+			renamer.checkRecord(record.objPath, record.objName);
+			System.out.println("");
 		}
-		int i = fileName.lastIndexOf('.');
-		String currentExt = "";
-		if (i > 0) {
-			currentExt = fileName.substring(i + 1);
+		System.out.println(String.format("Total files in export: %d",
+				Integer.valueOf(this.details.size())));
+	}
+
+	static String extFromFileName(final String name) {
+		int i = name.lastIndexOf('.');
+		return (i > 0) ? name.substring(i + 1) : null;
+	}
+
+	private void processRecord() throws SAXException {
+
+		if (!this.recBuilder.fileName.trim().isEmpty()) {
+			RecordDetails recDetails = this.recBuilder.build();
+			if (this.opts.isEnhanced) {
+				StringBuffer ele = new StringBuffer("\n    <fixedFilename>");
+				ele.append(recDetails.objName.newName());
+				ele.append("</fixedFilename>");
+				this.outHandler.emit(ele.toString());
+			}
+			this.details.add(recDetails);
 		}
-		if (!currentExt.isEmpty() && (currentExt.equals(ext)
-				|| currentExt.startsWith(ext) || ext.startsWith(currentExt))) {
-			return fileName;
+		this.recBuilder = null;
+	}
+
+	static void renameObjectFile(final File originalFile,
+			final File renameTo) {
+		if (originalFile.isFile()) {
+			// Original still exists, so not renamed
+			if (!renameTo.exists()) {
+				System.out
+						.println(String.format("File %s WILL be renamed to %s",
+								originalFile, renameTo));
+				// originalFile.renameTo(renameTo);
+			} else {
+				System.err.println("RENAME TARGET EXISTS");
+				System.err.println("====================");
+				System.err.println(String.format(
+						"File %s CANNOT be renamed to %s as target file exists already",
+						originalFile, renameTo));
+			}
+		} else if (renameTo.exists()) {
+			// Original gone and new file in place means rename already
+			// performed
+			System.out.println(
+					String.format("File %s has already been renamed to %s",
+							originalFile, renameTo));
+		} else {
+			// Can't find original or rename target == lost file
+			System.err.println("LOST FILE");
+			System.err.println("=========");
+			System.err.println(
+					String.format("Orignal file %s is missing", originalFile));
+			System.err.println(String
+					.format("Rename target file %s is also missing", renameTo));
+			System.exit(2);
 		}
-		return fileName + "." + ext;
+	}
+
+	private boolean isRecordEle() {
+		return "record".equals(this.currEleName);
+	}
+
+	static class RecordDetails {
+		final ObjectName objName;
+		final ObjectPath objPath;
+		final int fileSize;
+
+		RecordDetails(final ObjectName objName, final ObjectPath objPath,
+				final int fileSize) {
+			this.objName = objName;
+			this.objPath = objPath;
+			this.fileSize = fileSize;
+		}
+
+		/**
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return "RecordDetails [objName=" + this.objName + ", objPath="
+					+ this.objPath + ", fileSize=" + this.fileSize + "]";
+		}
+
+	}
+
+	static class RecordBuilder {
+		String exportPath = null;
+		String mimeType = null;
+		String fileName = null;
+		int fileSize = -1;
+
+		public void processEle(final String name, final String value) {
+			if (isFileNameEle(name)) {
+				this.fileName = value;
+			} else if (isFileSizeEle(name)) {
+				if (!value.trim().isEmpty()) {
+					this.fileSize = Integer.parseInt(value);
+				}
+			} else if (isMimeEle(name)) {
+				this.mimeType = value;
+			} else if (isExpPathEle(name)) {
+				this.exportPath = value;
+			}
+		}
+
+		public RecordDetails build() {
+			ObjectName objName = new ObjectName(this.fileName, this.mimeType);
+			String relativePath = "RelativePath";
+			ObjectPath objPath = new ObjectPath(this.exportPath, relativePath);
+			return new RecordDetails(objName, objPath, this.fileSize);
+		}
+
+		public static boolean isFileNameEle(final String eleName) {
+			return "filename".equals(eleName);
+		}
+
+		public static boolean isFileSizeEle(final String eleName) {
+			return "filesize".equals(eleName);
+		}
+
+		public static boolean isMimeEle(final String eleName) {
+			return "mimetype".equals(eleName);
+		}
+
+		public static boolean isExpPathEle(final String eleName) {
+			return "objectexportpath".equals(eleName);
+		}
+	}
+
+	static class ObjectName {
+		final String fileName;
+		final String fileExt;
+		final String mimeType;
+		final String mimeExt;
+
+		ObjectName(final String fileName, final String mimeType) {
+			super();
+			this.fileName = fileName;
+			this.fileExt = extFromFileName(fileName);
+			this.mimeType = mimeType;
+			this.mimeExt = MimeExtensionMapper.getExtForMime(mimeType);
+		}
+
+		public boolean isToRename() {
+			if (this.mimeExt == null || this.mimeExt.isEmpty()) {
+				return false;
+			}
+			return (this.fileExt == null || this.fileExt.isEmpty());
+		}
+
+		public String newName() {
+			return (this.isToRename()) ? fileName + "." + this.mimeExt
+					: this.fileName;
+		}
+
+		/**
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return "ObjectName [fileName=" + this.fileName + ", fileExt="
+					+ this.fileExt + ", mimeType=" + this.mimeType
+					+ ", mimeExt=" + this.mimeExt + "]";
+		}
+	}
+
+	static class ObjectPath {
+		final String exportPath;
+		final String relativePath;
+
+		ObjectPath(String exportPath, String relativePath) {
+			super();
+			this.exportPath = exportPath;
+			this.relativePath = relativePath;
+		}
+
+		/**
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return "ObjectPath [exportPath=" + this.exportPath
+					+ ", relativePath=" + this.relativePath + "]";
+		}
+	}
+
+	static class RecordRenamer {
+		private final File root;
+
+		RecordRenamer(final File root) {
+			this.root = root;
+		}
+
+		void checkRecord(final ObjectPath objPath, final ObjectName objName) {
+			File originalFile = new File(
+					findObjParentDir(this.root, objPath.exportPath),
+					objName.fileName);
+			File renameTo = new File(originalFile.getParentFile(),
+					objName.newName());
+			if (!objName.isToRename()) {
+				System.out.println(String.format("Not renaming object: %s/%s",
+						objPath.exportPath, objName.fileName));
+				if (objName.mimeExt == null || objName.mimeExt.isEmpty()) {
+					System.out.println("No MIME type extension suggested.");
+				}
+				if (objName.fileExt != null && !objName.fileExt.isEmpty()) {
+					System.out.println(String.format(
+							"Object file already has extension: %s",
+							objName.fileExt));
+				}
+				if (!originalFile.exists()) {
+					System.out.println(String.format("MISSING Export File: %s/%s",
+						objPath.exportPath, objName.fileName));
+					return;
+				}
+			}
+
+			if (!objName.fileName.equals(objName.newName())) {
+				// File needs renaming
+				renameObjectFile(originalFile, renameTo);
+			}
+		}
 	}
 }
