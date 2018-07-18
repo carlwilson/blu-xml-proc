@@ -60,8 +60,10 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <archive>
+            <finalName>blu-xml-proc</finalName>
+            <appendAssemblyId>false</appendAssemblyId>
             <manifest>
-              <mainClass>org.unhcr.esafe.XmlOutputParser</mainClass>
+              <mainClass>org.unhcr.esafe.BluXmlProcessor</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

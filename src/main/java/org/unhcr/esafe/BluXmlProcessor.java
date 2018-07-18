@@ -9,14 +9,14 @@ import org.xml.sax.SAXException;
  *         <a href="https://github.com/carlwilson">carlwilson AT github</a>
  *
  * @version 0.1
- * 
+ *
  *          Created 22 Jun 2018:00:27:22
  */
 
 public final class BluXmlProcessor {
 
 	/**
-	 * 
+	 *
 	 */
 	public BluXmlProcessor() {
 		// TODO Auto-generated constructor stub
