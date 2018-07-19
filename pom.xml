@@ -59,9 +59,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
+          <finalName>blu-xml-proc</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
           <archive>
-            <finalName>blu-xml-proc</finalName>
-            <appendAssemblyId>false</appendAssemblyId>
             <manifest>
               <mainClass>org.unhcr.esafe.BluXmlProcessor</mainClass>
             </manifest>
