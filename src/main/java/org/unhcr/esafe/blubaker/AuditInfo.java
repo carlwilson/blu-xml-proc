@@ -28,6 +28,12 @@ public final class AuditInfo {
 		this.maxVersions = maxVersions;
 	}
 	
+	@Override
+	public String toString() {
+		return "AuditInfo [created=" + created + ", modified=" + modified + ", createdBy=" + createdBy + ", versionId="
+				+ versionId + ", versions=" + versions + ", maxVersions=" + maxVersions + "]";
+	}
+
 	static class Builder {
 		private Date crtd = new Date();
 		private Date mdfd = new Date();

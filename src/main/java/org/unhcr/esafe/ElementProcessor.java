@@ -3,6 +3,8 @@
  */
 package org.unhcr.esafe;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.unhcr.esafe.blubaker.Record;
@@ -36,8 +38,11 @@ final class ElementProcessor {
 	private final static String eleMaxVersions = "maxversions";
 	private final static String eleVersions = "versions";
 
+	private static SimpleDateFormat dateFormatter = new SimpleDateFormat("mm/dd/yyyy");
+
 	private Record.Builder recBuilder;
 	private int maxRecNum = 0;
+	private int recCount = 0;
 
 	static boolean isRecordEle(final String eleName) {
 		return eleRecord.equals(eleName);
@@ -48,6 +53,15 @@ final class ElementProcessor {
 		this.recBuilder.id(Integer.parseInt(getId(atts)));
 		this.maxRecNum = (Integer.parseInt(getRecNumber(atts)) > this.maxRecNum) ? Integer.parseInt(getRecNumber(atts))
 				: this.maxRecNum;
+		this.recCount++;
+	}
+
+	public int getMaxRecNum() {
+		return this.maxRecNum;
+	}
+
+	public int getRecordCount() {
+		return this.recCount;
 	}
 
 	public Record buildRecord() {
@@ -89,11 +103,11 @@ final class ElementProcessor {
 			break;
 
 		case eleCreatedDate:
-			this.recBuilder.created(new Date(eleValue));
+			this.recBuilder.created(parseDate(eleValue));
 			break;
 
 		case eleModifyDate:
-			this.recBuilder.modified(new Date(eleValue));
+			this.recBuilder.modified(parseDate(eleValue));
 			break;
 
 		case eleObjectDescription:
@@ -148,5 +162,13 @@ final class ElementProcessor {
 			}
 		}
 		return empty;
+	}
+
+	private static Date parseDate(final String date) {
+		try {
+			return dateFormatter.parse(date);
+		} catch (ParseException e) {
+			throw new IllegalArgumentException(String.format("Bad date value %s.", date), e);
+		}
 	}
 }

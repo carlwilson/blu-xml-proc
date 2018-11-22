@@ -7,6 +7,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.unhcr.esafe.blubaker.Record;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -39,6 +40,7 @@ public final class EsafeXmlHandler extends DefaultHandler {
 	private XmlCharBuffer buffer = new XmlCharBuffer();
 	private final ProcessorOptions opts;
 	private final ElementProcessor eleProc = new ElementProcessor();
+	private final RecordProcessor recProc = new RecordProcessor();
 
 	public EsafeXmlHandler(final ProcessorOptions opts) {
 		this.opts = opts;
@@ -70,6 +72,7 @@ public final class EsafeXmlHandler extends DefaultHandler {
 
 	@Override
 	public void endDocument() throws SAXException {
+		assert(this.eleProc.getRecordCount() == this.eleProc.getMaxRecNum());
 		if (!this.opts.isEnhanced)
 			return;
 //			this.outHandler.nl();
@@ -103,9 +106,10 @@ public final class EsafeXmlHandler extends DefaultHandler {
 	) throws SAXException {
 		this.currEleName = deriveEleName(sName, qName);
 		if (ElementProcessor.isRecordEle(this.currEleName)) {
-			this.eleProc.buildRecord();
+			Record rec = this.eleProc.buildRecord();
+			this.recProc.addRecord(rec);
 		} else {
-			this.eleProc.processElement(this.currEleName, this.currEleName);
+			this.eleProc.processElement(this.currEleName, this.buffer.voidBuffer().trim());
 		}
 //		if (this.isRecordEle()) {
 //			this.processRecord();

@@ -21,6 +21,11 @@ public final class File {
 		this.mimeType = mimeType;
 	}
 
+	@Override
+	public String toString() {
+		return "File [exportPath=" + exportPath + ", name=" + name + ", size=" + size + ", mimeType=" + mimeType + "]";
+	}
+
 	static class Builder {
 		private String pth = "";
 		private String nm = "";

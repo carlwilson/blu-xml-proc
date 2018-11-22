@@ -11,6 +11,11 @@ public class Object {
 		this.description = description;
 	}
 
+	@Override
+	public String toString() {
+		return "Object [path=" + path + ", name=" + name + ", description=" + description + "]";
+	}
+
 	static class Builder {
 		private String pth ="";
 		private String nm = "";

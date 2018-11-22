@@ -19,6 +19,11 @@ public final class Details {
 		this.subType = subType;
 	}
 	
+	@Override
+	public String toString() {
+		return "Details [id=" + id + ", parentId=" + parentId + ", subType=" + subType + "]";
+	}
+
 	static class Builder {
 		private int ident = -1;
 		private int prntId = -1;

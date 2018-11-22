@@ -26,6 +26,16 @@ public final class Record {
 		this.file = file;
 	}
 
+	public boolean isFile() {
+		return this.details.subType != 0;
+	}
+
+	@Override
+	public String toString() {
+		return "Record [details=" + details + ", owner=" + owner + ", auditInfo=" + auditInfo + ", object=" + object
+				+ ", file=" + file + "]";
+	}
+
 	public static class Builder {
 		private Details.Builder detBld = new Details.Builder();
 		private Owner.Builder ownBld = new Owner.Builder();

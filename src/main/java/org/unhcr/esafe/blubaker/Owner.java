@@ -17,6 +17,11 @@ public final class Owner {
 		this.name = name;
 	}
 
+	@Override
+	public String toString() {
+		return "Owner [id=" + id + ", name=" + name + "]";
+	}
+
 	static class Builder {
 		private int ident = -1;
 		private String nm = "";
