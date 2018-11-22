@@ -78,8 +78,8 @@ public final class Record {
 			return this;
 		}
 
-		public Builder version(final int version) {
-			this.audBld.version(version);
+		public Builder versions(final int version) {
+			this.audBld.versions(version);
 			return this;
 		}
 
@@ -105,6 +105,11 @@ public final class Record {
 
 		public Builder exportPath(final String exportPath) {
 			this.flBld.exportPath(exportPath);
+			return this;
+		}
+		
+		public Builder fileName(final String fileName) {
+			this.flBld.name(fileName);
 			return this;
 		}
 

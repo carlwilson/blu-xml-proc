@@ -14,17 +14,17 @@ public final class AuditInfo {
 	final Date modified;
 	final String createdBy;
 	final int versionId;
-	final int version;
+	final int versions;
 	final int maxVersions;
 
-	AuditInfo(final Date created, final Date modified, final String createdBy, final int versionId, final int version,
+	AuditInfo(final Date created, final Date modified, final String createdBy, final int versionId, final int versions,
 			final int maxVersions) {
 		super();
 		this.created = new Date(created.getTime());
 		this.modified = new Date(modified.getTime());
 		this.createdBy = createdBy;
 		this.versionId = versionId;
-		this.version = version;
+		this.versions = versions;
 		this.maxVersions = maxVersions;
 	}
 	
@@ -33,7 +33,7 @@ public final class AuditInfo {
 		private Date mdfd = new Date();
 		private String crtdBy = "";
 		private int vrsnId = -1;
-		private int vrsn = -1;
+		private int vrsns = -1;
 		private int mxVrsns = -1;
 
 		Builder created(final Date created) {
@@ -56,8 +56,8 @@ public final class AuditInfo {
 			return this;
 		}
 
-		Builder version(final int version) {
-			this.vrsn = version;
+		Builder versions(final int versions) {
+			this.vrsns = versions;
 			return this;
 		}
 
@@ -67,7 +67,7 @@ public final class AuditInfo {
 		}
 		
 		AuditInfo build() {
-			return new AuditInfo(this.crtd, this.mdfd, this.crtdBy, this.vrsnId, this.vrsn, this.mxVrsns);
+			return new AuditInfo(this.crtd, this.mdfd, this.crtdBy, this.vrsnId, this.vrsns, this.mxVrsns);
 		}
 	}
 }

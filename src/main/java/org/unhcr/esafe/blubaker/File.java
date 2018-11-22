@@ -9,23 +9,31 @@ package org.unhcr.esafe.blubaker;
  */
 public final class File {
 	final String exportPath;
+	final String name;
 	final int size;
 	final String mimeType;
 
-	File(String path, int size, String mimeType) {
+	File(final String path, final String name, final int size, final String mimeType) {
 		super();
 		this.exportPath = path;
+		this.name = name;
 		this.size = size;
 		this.mimeType = mimeType;
 	}
 
 	static class Builder {
 		private String pth = "";
+		private String nm = "";
 		private int sz = -1;
 		private String mime = "";
 
 		public Builder exportPath(final String exportPath) {
 			this.pth = exportPath;
+			return this;
+		}
+
+		public Builder name(final String name) {
+			this.nm = name;
 			return this;
 		}
 
@@ -38,9 +46,9 @@ public final class File {
 			this.mime = mime;
 			return this;
 		}
-		
+
 		public File build() {
-			return new File(this.pth, this.sz, this.mime);
+			return new File(this.pth, this.nm, this.sz, this.mime);
 		}
 	}
 }
