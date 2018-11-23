@@ -10,11 +10,11 @@ import java.util.Date;
  *
  */
 public final class Record {
-	final Details details;
-	final Owner owner;
-	final AuditInfo auditInfo;
-	final Object object;
-	final File file;
+	public final Details details;
+	public final Owner owner;
+	public final AuditInfo auditInfo;
+	public final Object object;
+	public final File file;
 
 	private Record(final Details details, final Owner owner, final AuditInfo auditInfo, final Object object,
 			final File file) {
@@ -27,7 +27,7 @@ public final class Record {
 	}
 
 	public boolean isFile() {
-		return this.details.subType != 0;
+		return (this.file.size > 0 && !this.file.mimeType.isEmpty());
 	}
 
 	@Override

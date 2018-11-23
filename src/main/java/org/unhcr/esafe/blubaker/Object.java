@@ -1,9 +1,9 @@
 package org.unhcr.esafe.blubaker;
 
 public class Object {
-	final String path;
-	final String name;
-	final String description;
+	public final String path;
+	public final String name;
+	public final String description;
 	
 	Object (final String path, final String name, final String description) {
 		this.path = path;

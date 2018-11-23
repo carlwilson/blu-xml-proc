@@ -1,5 +1,6 @@
 package org.unhcr.esafe;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.xml.sax.SAXException;
@@ -35,8 +36,16 @@ public final class BluXmlProcessor {
 			usage();
 			System.exit(0);
 		}
-		EsafeXmlHandler handler = new EsafeXmlHandler(opts);
-		handler.processExports();
+		for (File toProcess : opts.toProcess) {
+			processExport(toProcess);
+		}
+		
+	}
+
+	private static void processExport(final File toProcess) throws IOException, SAXException  {
+		EsafeXmlHandler handler = new EsafeXmlHandler(toProcess.toPath());
+		RecordProcessor recProc = handler.processExports();
+		recProc.generateManifest();
 	}
 
 	private static void usage() {

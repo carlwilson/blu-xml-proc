@@ -2,6 +2,7 @@ package org.unhcr.esafe;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -31,73 +32,49 @@ public final class EsafeXmlHandler extends DefaultHandler {
 		try {
 			saxParser = spf.newSAXParser();
 		} catch (ParserConfigurationException | SAXException excep) {
-			// TODO Auto-generated catch block
 			throw new IllegalStateException(
 					"Couldn't initialise SAX XML Parser.", excep);
 		}
 	}
 	private String currEleName;
 	private XmlCharBuffer buffer = new XmlCharBuffer();
-	private final ProcessorOptions opts;
 	private final ElementProcessor eleProc = new ElementProcessor();
-	private final RecordProcessor recProc = new RecordProcessor();
+	private final RecordProcessor recProc;
 
-	public EsafeXmlHandler(final ProcessorOptions opts) {
-		this.opts = opts;
+	public EsafeXmlHandler(final Path exportRoot) {
+		this.recProc = new RecordProcessor(exportRoot);
 	}
+	
+	public RecordProcessor processExports() throws IOException, SAXException {
+		File dirToParse = this.recProc.exportRoot.toFile();
+		for (File child : dirToParse.listFiles()) {
+			if (child.isFile()
+					&& child.getName().toLowerCase().endsWith(".xml")) {
+				saxParser.parse(child, this);
+			}
+		}
+		return this.recProc;
+
+	}
+
 	// ===========================================================
 	// SAX DocumentHandler methods
 	// ===========================================================
 
-	public void processExports() throws IOException, SAXException {
-		for (File dirToParse : this.opts.toProcess) {
-			for (File child : dirToParse.listFiles()) {
-				if (child.isFile()
-						&& child.getName().toLowerCase().endsWith(".xml")) {
-					saxParser.parse(child, this);
-				}
-			}
-		}
-
-	}
-
-	@Override
-	public void startDocument() throws SAXException {
-		// Output the XML processing instruction
-		if (!this.opts.isEnhanced)
-			return;
-//		this.outHandler.emit("<?xml version='1.0' encoding='UTF-8'?>");
-//		this.outHandler.nl();
-	}
-
 	@Override
 	public void endDocument() throws SAXException {
 		assert(this.eleProc.getRecordCount() == this.eleProc.getMaxRecNum());
-		if (!this.opts.isEnhanced)
-			return;
-//			this.outHandler.nl();
-//			this.outHandler.nl();
 	}
 
 	@Override
 	public void startElement(String namespaceURI, String sName, // simple name
 			String qName, // qualified name
 			Attributes attrs) throws SAXException {
-		// Throw the text to output
-//		if (this.opts.isEnhanced)
-//			this.outHandler.echoText();
-//		else
-//			this.outHandler.voidBuffer();
-//		// Get the current ele name
+		// Get the current ele name
 		this.currEleName = deriveEleName(sName, qName);
 		if (ElementProcessor.isRecordEle(this.currEleName)) {
 			this.eleProc.recordStart(attrs);
 		}
-//		if (this.isRecordEle()) {
-//			this.recBuilder = new RecordBuilder();
-//		}
-//		if (this.opts.isEnhanced)
-//			outputEleStart(this.outHandler, this.currEleName, attrs);
 	}
 
 	@Override
@@ -111,18 +88,7 @@ public final class EsafeXmlHandler extends DefaultHandler {
 		} else {
 			this.eleProc.processElement(this.currEleName, this.buffer.voidBuffer().trim());
 		}
-//		if (this.isRecordEle()) {
-//			this.processRecord();
-//		} else if (!"dataextract".equals(this.currEleName)) {
-//			this.recBuilder.processEle(this.currEleName,
-//					this.outHandler.getBufferValue());
-//		}
-//		if (this.opts.isEnhanced) {
-//			this.outHandler.echoText();
-//			this.outHandler.emit("</" + this.currEleName + ">");
-//		} else
-//			this.outHandler.voidBuffer();
-		
+	
 	}
 
 	private static String deriveEleName(final String sName,
@@ -130,66 +96,9 @@ public final class EsafeXmlHandler extends DefaultHandler {
 		return ("".equals(sName)) ? qName : sName; // element name
 	}
 
-//
-//	private static void outputEleStart(final OutputHandler handler,
-//			final String eleName, final Attributes attrs) throws SAXException {
-//		handler.emit("<" + eleName);
-//		if (attrs != null) {
-//			for (int i = 0; i < attrs.getLength(); i++) {
-//				String aName = attrs.getLocalName(i); // Attr name
-//				if ("".equals(aName))
-//					aName = attrs.getQName(i);
-//				handler.emit(" ");
-//				handler.emit(aName + "=\"" + attrs.getValue(i) + "\"");
-//			}
-//		}
-//		handler.emit(">");
-//	}
-
 	@Override
 	public void characters(char buf[], int offset, int len) {
 		String toAdd = new String(buf, offset, len);
 		this.buffer.addToBuffer(toAdd);
 	}
-
-	public static File findObjParentDir(final File currentDir,
-			final String objPath) {
-		if (objPath == null)
-			return null;
-		String[] pathParts = objPath.split("\\\\");
-		return findExportParent(currentDir, pathParts);
-	}
-
-	public static File findExportParent(final File rootDir,
-			String[] pathParts) {
-		String rootName = getRootName(rootDir);
-		StringBuffer itemPath = new StringBuffer(rootDir.getAbsolutePath());
-		boolean isAppend = false;
-		for (String pathPart : pathParts) {
-			if (isAppend) {
-				itemPath.append(File.separator);
-				itemPath.append(pathPart);
-			} else if (rootName.equals(pathPart)) {
-				isAppend = true;
-			}
-		}
-		return new File(itemPath.toString());
-	}
-
-	private static String getRootName(final File root) {
-		String rootName = root.getName();
-		return (".".equals(rootName)) ? root.getParentFile().getName()
-				: rootName;
-	}
-
-//	private void report() {
-//		RecordRenamer renamer = new RecordRenamer(this.currentDir);
-//		for (RecordDetails record : this.details) {
-//			renamer.checkRecord(record.objPath, record.objName);
-//			System.out.println("");
-//		}
-//		System.out.println(String.format("Total files in export: %d",
-//				Integer.valueOf(this.details.size())));
-//	}
-
 }

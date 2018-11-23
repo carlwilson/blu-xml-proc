@@ -8,10 +8,10 @@ package org.unhcr.esafe.blubaker;
  *
  */
 public final class File {
-	final String exportPath;
-	final String name;
-	final int size;
-	final String mimeType;
+	public final String exportPath;
+	public final String name;
+	public final int size;
+	public final String mimeType;
 
 	File(final String path, final String name, final int size, final String mimeType) {
 		super();
