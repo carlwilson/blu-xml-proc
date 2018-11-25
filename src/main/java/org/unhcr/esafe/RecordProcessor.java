@@ -17,12 +17,13 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.unhcr.esafe.blubaker.Record;
+import org.unhcr.esafe.metadata.DublinCoreCsv;
 
 /**
  * @author cfw
  *
  */
-final class RecordProcessor {
+public final class RecordProcessor {
 	final List<Record> records = new ArrayList<>();
 	final Path exportRoot;
 	final Path dataRoot;
@@ -42,15 +43,23 @@ final class RecordProcessor {
 				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos))) {
 			for (Record record : this.records) {
 				if (record.isFile()) {
-					File exportedFile = this.findExportedFile(record);
-					String relPath = this.exportRoot.relativize(exportedFile.toPath().toAbsolutePath()).toString();
-					if (relPath.startsWith("./"))
-						relPath = relPath.replaceFirst("./", "");
+					File exportedFile = findExportedFile(this.dataRoot, record);
+					String relPath = getRelPath(this.exportRoot, exportedFile);
 					writer.write(this.getShaOfFile(exportedFile) + " " + relPath);
 					writer.newLine();
 				}
 			}
 		}
+	}
+
+	public static String getRelPath(Path expRoot, File file) {
+		String relPath = expRoot.relativize(file.toPath().toAbsolutePath()).toString();
+		if (relPath.startsWith("./"))
+			relPath = relPath.replaceFirst("./", "");
+		return "data/" + relPath;
+	}
+	public void createDublinCore() throws IOException {
+		DublinCoreCsv.writeMetadata(this.dataRoot, this.records);
 	}
 
 	private String getShaOfFile(final File file) throws IOException {
@@ -59,7 +68,8 @@ final class RecordProcessor {
 		}
 	}
 
-	private File findExportedFile(final Record record) {
+	public static File findExportedFile(final Path dataRoot, final Record record) {
+		Path exportRoot = dataRoot.getParent();
 		// Get the object export path path from the file
 		Path recExpPath = Paths.get(record.file.exportPath);
 		if (recExpPath.toString().isEmpty()) {
@@ -77,7 +87,7 @@ final class RecordProcessor {
 		// Split the path into parts
 		String[] pathParts = (expPathStr.contains("\\")) ? expPathStr.split("\\\\") : new String[] { expPathStr };
 		for (String pathPart : pathParts) {
-			if (pathPart.equals(this.dataRoot.getFileName().toString()) || rootFound) {
+			if (pathPart.equals(dataRoot.getFileName().toString()) || rootFound) {
 				// Once we've found the data root keep concatenating the parts
 				// to build a relative path
 				rootFound = true;
@@ -85,12 +95,12 @@ final class RecordProcessor {
 			}
 		}
 		// Make a file from the path
-		File expFile = Paths.get(this.exportRoot.toString(), relRecPath.toString(), record.object.name).toAbsolutePath()
+		File expFile = Paths.get(exportRoot.toString(), relRecPath.toString(), record.object.name).toAbsolutePath()
 				.toFile();
 		if (!expFile.exists()) {
 			// If that doesn't exist we pull a similar stunt to see if we can
 			// un-mangle BluBakers file path
-			expFile = Paths.get(this.exportRoot.toString(), relRecPath.toString(), record.file.name.replace("/", "_"))
+			expFile = Paths.get(exportRoot.toString(), relRecPath.toString(), record.file.name.replace("/", "_"))
 					.toAbsolutePath().toFile();
 		}
 		// Return the file whether it exists or not

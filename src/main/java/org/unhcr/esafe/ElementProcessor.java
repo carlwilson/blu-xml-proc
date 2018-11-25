@@ -14,7 +14,7 @@ import org.xml.sax.Attributes;
  * @author cfw
  *
  */
-final class ElementProcessor {
+public final class ElementProcessor {
 	private final static String empty = "";
 	private final static String attId = "dataid";
 	private final static String attRecNumber = "number";
@@ -38,7 +38,7 @@ final class ElementProcessor {
 	private final static String eleMaxVersions = "maxversions";
 	private final static String eleVersions = "versions";
 
-	private static SimpleDateFormat dateFormatter = new SimpleDateFormat("mm/dd/yyyy");
+	public static SimpleDateFormat dateFormatter = new SimpleDateFormat("mm/dd/yyyy");
 
 	private Record.Builder recBuilder;
 	private int maxRecNum = 0;
@@ -170,5 +170,9 @@ final class ElementProcessor {
 		} catch (ParseException e) {
 			throw new IllegalArgumentException(String.format("Bad date value %s.", date), e);
 		}
+	}
+	
+	public static String formatDate(final Date date) {
+		return dateFormatter.format(date);
 	}
 }

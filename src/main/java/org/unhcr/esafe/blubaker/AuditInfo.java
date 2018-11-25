@@ -10,7 +10,7 @@ import java.util.Date;
  *
  */
 public final class AuditInfo {
-	final Date created;
+	public final Date created;
 	final Date modified;
 	final String createdBy;
 	final int versionId;

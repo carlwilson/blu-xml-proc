@@ -46,6 +46,7 @@ public final class BluXmlProcessor {
 		EsafeXmlHandler handler = new EsafeXmlHandler(toProcess.toPath());
 		RecordProcessor recProc = handler.processExports();
 		recProc.generateManifest();
+		recProc.createDublinCore();
 	}
 
 	private static void usage() {
