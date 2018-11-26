@@ -1,0 +1,9 @@
+.classpath
+.project
+.settings
+test
+target
+XT-OEC*
+
+**/old.*
+test-data/

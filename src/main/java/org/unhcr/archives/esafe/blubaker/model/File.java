@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.unhcr.esafe.blubaker;
+package org.unhcr.archives.esafe.blubaker.model;
 
 /**
  * @author cfw
@@ -30,7 +30,7 @@ public final class File {
 		private String pth = "";
 		private String nm = "";
 		private int sz = -1;
-		private String mime = "";
+		private String mme = "";
 
 		public Builder exportPath(final String exportPath) {
 			this.pth = exportPath;
@@ -48,12 +48,12 @@ public final class File {
 		}
 
 		public Builder mimeType(final String mime) {
-			this.mime = mime;
+			this.mme = mime;
 			return this;
 		}
 
 		public File build() {
-			return new File(this.pth, this.nm, this.sz, this.mime);
+			return new File(this.pth, this.nm, this.sz, this.mme);
 		}
 	}
 }

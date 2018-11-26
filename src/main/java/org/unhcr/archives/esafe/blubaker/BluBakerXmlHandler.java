@@ -1,4 +1,4 @@
-package org.unhcr.esafe;
+package org.unhcr.archives.esafe.blubaker;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +8,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.unhcr.esafe.blubaker.Record;
+import org.unhcr.archives.esafe.blubaker.model.Record;
+import org.unhcr.archives.utils.XmlCharBuffer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -22,7 +23,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *          Created 22 Jun 2018:01:25:39
  */
 
-public final class EsafeXmlHandler extends DefaultHandler {
+public final class BluBakerXmlHandler extends DefaultHandler {
 	static final SAXParserFactory spf = SAXParserFactory.newInstance();
 	static {
 		spf.setNamespaceAware(true);
@@ -41,7 +42,7 @@ public final class EsafeXmlHandler extends DefaultHandler {
 	private final ElementProcessor eleProc = new ElementProcessor();
 	private final RecordProcessor recProc;
 
-	public EsafeXmlHandler(final Path exportRoot) {
+	public BluBakerXmlHandler(final Path exportRoot) {
 		this.recProc = new RecordProcessor(exportRoot);
 	}
 	
@@ -62,14 +63,14 @@ public final class EsafeXmlHandler extends DefaultHandler {
 	// ===========================================================
 
 	@Override
-	public void endDocument() throws SAXException {
+	public void endDocument() {
 		assert(this.eleProc.getRecordCount() == this.eleProc.getMaxRecNum());
 	}
 
 	@Override
 	public void startElement(String namespaceURI, String sName, // simple name
 			String qName, // qualified name
-			Attributes attrs) throws SAXException {
+			Attributes attrs) {
 		// Get the current ele name
 		this.currEleName = deriveEleName(sName, qName);
 		if (ElementProcessor.isRecordEle(this.currEleName)) {
@@ -80,7 +81,7 @@ public final class EsafeXmlHandler extends DefaultHandler {
 	@Override
 	public void endElement(String namespaceURI, String sName, // simple name
 			String qName  // qualified name
-	) throws SAXException {
+	) {
 		this.currEleName = deriveEleName(sName, qName);
 		if (ElementProcessor.isRecordEle(this.currEleName)) {
 			Record rec = this.eleProc.buildRecord();

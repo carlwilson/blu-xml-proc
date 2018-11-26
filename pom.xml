@@ -77,7 +77,7 @@
 					<appendAssemblyId>false</appendAssemblyId>
 					<archive>
 						<manifest>
-							<mainClass>org.unhcr.esafe.BluXmlProcessor</mainClass>
+							<mainClass>org.unhcr.archives.esafe.blubaker.BluXmlProcessor</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

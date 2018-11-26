@@ -1,4 +1,4 @@
-package org.unhcr.esafe;
+package org.unhcr.archives.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

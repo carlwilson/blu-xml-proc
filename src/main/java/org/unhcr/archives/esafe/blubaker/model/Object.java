@@ -1,4 +1,4 @@
-package org.unhcr.esafe.blubaker;
+package org.unhcr.archives.esafe.blubaker.model;
 
 public class Object {
 	public final String path;

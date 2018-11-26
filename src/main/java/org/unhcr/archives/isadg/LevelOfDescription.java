@@ -1,4 +1,4 @@
-package org.unhcr.esafe.isadg;
+package org.unhcr.archives.isadg;
 
 import java.util.Date;
 

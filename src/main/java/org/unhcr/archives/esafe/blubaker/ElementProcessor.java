@@ -1,13 +1,13 @@
 /**
  * 
  */
-package org.unhcr.esafe;
+package org.unhcr.archives.esafe.blubaker;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.unhcr.esafe.blubaker.Record;
+import org.unhcr.archives.esafe.blubaker.model.Record;
 import org.xml.sax.Attributes;
 
 /**

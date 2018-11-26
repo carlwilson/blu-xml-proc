@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.unhcr.esafe.blubaker;
+package org.unhcr.archives.esafe.blubaker.model;
 
 import java.util.Date;
 
@@ -16,7 +16,7 @@ public final class Record {
 	public final Object object;
 	public final File file;
 
-	private Record(final Details details, final Owner owner, final AuditInfo auditInfo, final Object object,
+	Record(final Details details, final Owner owner, final AuditInfo auditInfo, final Object object,
 			final File file) {
 		super();
 		this.details = details;

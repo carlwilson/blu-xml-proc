@@ -1,4 +1,4 @@
-package org.unhcr.esafe;
+package org.unhcr.archives.esafe.blubaker;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public final class BluXmlProcessor {
 	}
 
 	private static void processExport(final File toProcess) throws IOException, SAXException  {
-		EsafeXmlHandler handler = new EsafeXmlHandler(toProcess.toPath());
+		BluBakerXmlHandler handler = new BluBakerXmlHandler(toProcess.toPath());
 		RecordProcessor recProc = handler.processExports();
 		recProc.generateManifest();
 		recProc.createDublinCore();

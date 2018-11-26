@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.unhcr.esafe.metadata;
+package org.unhcr.archives.esafe.blubaker;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.unhcr.esafe.ElementProcessor;
-import org.unhcr.esafe.RecordProcessor;
-import org.unhcr.esafe.blubaker.Record;
+import org.unhcr.archives.esafe.blubaker.model.Record;
 
 import com.opencsv.CSVWriter;
 

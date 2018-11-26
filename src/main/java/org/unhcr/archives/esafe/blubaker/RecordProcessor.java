@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.unhcr.esafe;
+package org.unhcr.archives.esafe.blubaker;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.unhcr.esafe.blubaker.Record;
-import org.unhcr.esafe.metadata.DublinCoreCsv;
+import org.unhcr.archives.esafe.blubaker.model.Record;
 
 /**
  * @author cfw
@@ -37,7 +36,7 @@ public final class RecordProcessor {
 		this.records.add(record);
 	}
 
-	void generateManifest() throws IOException {
+	public void generateManifest() throws IOException {
 		File manifest = new File(this.exportRoot.toString(), "manifest-sha256.txt");
 		try (FileOutputStream fos = new FileOutputStream(manifest);
 				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos))) {
@@ -45,7 +44,7 @@ public final class RecordProcessor {
 				if (record.isFile()) {
 					File exportedFile = findExportedFile(this.dataRoot, record);
 					String relPath = getRelPath(this.exportRoot, exportedFile);
-					writer.write(this.getShaOfFile(exportedFile) + " " + relPath);
+					writer.write(RecordProcessor.getShaOfFile(exportedFile) + " " + relPath);
 					writer.newLine();
 				}
 			}
@@ -62,7 +61,7 @@ public final class RecordProcessor {
 		DublinCoreCsv.writeMetadata(this.dataRoot, this.records);
 	}
 
-	private String getShaOfFile(final File file) throws IOException {
+	private static String getShaOfFile(final File file) throws IOException {
 		try (InputStream is = new FileInputStream(file)) {
 			return DigestUtils.sha256Hex(is);
 		}

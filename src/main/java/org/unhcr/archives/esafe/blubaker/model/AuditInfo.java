@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.unhcr.esafe.blubaker;
+package org.unhcr.archives.esafe.blubaker.model;
 
 import java.util.Date;
 
