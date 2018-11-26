@@ -15,11 +15,18 @@ import java.util.Date;
 public enum Formatters {
 	INSTANCE;
 
-	public static SimpleDateFormat dateFormatter = new SimpleDateFormat(
+	public static SimpleDateFormat bluBakerDateFormatter = new SimpleDateFormat(
 			"mm/dd/yyyy");
 
-	public static String formatDate(final Date date) {
-		return dateFormatter.format(date);
+	public static SimpleDateFormat dcDateFormatter = new SimpleDateFormat(
+			"yyyy-mm-dd");
+
+	public static String formatBluBakerDate(final Date date) {
+		return bluBakerDateFormatter.format(date);
+	}
+
+	public static String formatDcDate(final Date date) {
+		return dcDateFormatter.format(date);
 	}
 
 	// See https://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java

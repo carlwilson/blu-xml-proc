@@ -164,7 +164,7 @@ public final class ElementProcessor {
 
 	private static Date parseDate(final String date) {
 		try {
-			return Formatters.dateFormatter.parse(date);
+			return Formatters.bluBakerDateFormatter.parse(date);
 		} catch (ParseException e) {
 			throw new IllegalArgumentException(String.format("Bad date value %s.", date), e);
 		}

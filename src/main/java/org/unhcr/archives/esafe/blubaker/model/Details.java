@@ -8,8 +8,8 @@ package org.unhcr.archives.esafe.blubaker.model;
  *
  */
 public final class Details {
-	final int id;
-	final int parentId;
+	public final int id;
+	public final int parentId;
 	final int subType;
 	
 	Details (final int id, final int parentId, final int subType) {

@@ -10,7 +10,16 @@ import java.util.Arrays;
 import gov.loc.repository.bagit.creator.BagCreator;
 import gov.loc.repository.bagit.domain.Bag;
 import gov.loc.repository.bagit.domain.Metadata;
+import gov.loc.repository.bagit.domain.Version;
+import gov.loc.repository.bagit.exceptions.FileNotInPayloadDirectoryException;
+import gov.loc.repository.bagit.exceptions.InvalidBagitFileFormatException;
+import gov.loc.repository.bagit.exceptions.MaliciousPathException;
+import gov.loc.repository.bagit.exceptions.MissingBagitFileException;
+import gov.loc.repository.bagit.exceptions.MissingPayloadDirectoryException;
+import gov.loc.repository.bagit.exceptions.MissingPayloadManifestException;
+import gov.loc.repository.bagit.exceptions.UnsupportedAlgorithmException;
 import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
+import gov.loc.repository.bagit.verify.BagVerifier;
 
 /**
  * @author <a href="mailto:carl@openpreservation.org">Carl Wilson</a>
@@ -36,9 +45,35 @@ public final class BagStructMaker {
 		this.sizeInBytes = sizeInBytes;
 	}
 
-	public void createBag() throws NoSuchAlgorithmException, IOException {
+	public Bag createBag() throws NoSuchAlgorithmException, IOException {
 		Bag bag = BagCreator.bagInPlace(this.bagRoot, Arrays.asList(algorithm),
 				false, defaultMd(sizeInBytes));
+		Version version = new Version(0, 97);
+		bag.setVersion(version);
+		try {
+			verfifyBag(bag);
+		} catch (InterruptedException | MaliciousPathException
+				| UnsupportedAlgorithmException excep) {
+			excep.printStackTrace();
+			System.exit(-1);
+		}
+		return bag;
+	}
+
+	private static boolean verfifyBag(final Bag toVerify)
+			throws IOException, InterruptedException, MaliciousPathException,
+			UnsupportedAlgorithmException {
+		try (BagVerifier verifier = new BagVerifier();) {
+			verifier.isComplete(toVerify, false);
+			return true;
+		} catch (MissingPayloadManifestException | MissingBagitFileException
+				| MissingPayloadDirectoryException
+				| FileNotInPayloadDirectoryException
+				| InvalidBagitFileFormatException excep) {
+			// TODO Auto-generated catch block
+			excep.printStackTrace();
+		}
+		return false;
 	}
 
 	public static BagStructMaker fromPath(final Path bagRoot,
