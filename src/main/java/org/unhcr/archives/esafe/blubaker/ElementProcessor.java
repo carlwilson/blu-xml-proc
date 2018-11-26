@@ -4,10 +4,10 @@
 package org.unhcr.archives.esafe.blubaker;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.unhcr.archives.esafe.blubaker.model.Record;
+import org.unhcr.archives.utils.Formatters;
 import org.xml.sax.Attributes;
 
 /**
@@ -37,8 +37,6 @@ public final class ElementProcessor {
 	private final static String eleMimeType = "mimetype";
 	private final static String eleMaxVersions = "maxversions";
 	private final static String eleVersions = "versions";
-
-	public static SimpleDateFormat dateFormatter = new SimpleDateFormat("mm/dd/yyyy");
 
 	private Record.Builder recBuilder;
 	private int maxRecNum = 0;
@@ -166,13 +164,9 @@ public final class ElementProcessor {
 
 	private static Date parseDate(final String date) {
 		try {
-			return dateFormatter.parse(date);
+			return Formatters.dateFormatter.parse(date);
 		} catch (ParseException e) {
 			throw new IllegalArgumentException(String.format("Bad date value %s.", date), e);
 		}
-	}
-	
-	public static String formatDate(final Date date) {
-		return dateFormatter.format(date);
 	}
 }

@@ -2,7 +2,9 @@ package org.unhcr.archives.esafe.blubaker;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
+import org.unhcr.archives.utils.BagStructMaker;
 import org.xml.sax.SAXException;
 
 /**
@@ -26,7 +28,8 @@ public final class BluXmlProcessor {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) throws SAXException, IOException {
+	public static void main(String[] args)
+			throws SAXException, IOException, NoSuchAlgorithmException {
 		ProcessorOptions opts = ProcessorOptions.fromArgs(args);
 		if (opts.toProcess.isEmpty()) {
 			usage();
@@ -39,21 +42,23 @@ public final class BluXmlProcessor {
 		for (File toProcess : opts.toProcess) {
 			processExport(toProcess);
 		}
-		
+
 	}
 
-	private static void processExport(final File toProcess) throws IOException, SAXException  {
+	private static void processExport(final File toProcess)
+			throws IOException, SAXException, NoSuchAlgorithmException {
 		BluBakerXmlHandler handler = new BluBakerXmlHandler(toProcess.toPath());
 		RecordProcessor recProc = handler.processExports();
-		recProc.generateManifest();
 		recProc.createDublinCore();
+		BagStructMaker bagMaker = BagStructMaker.fromPath(toProcess.toPath(), recProc.getSize());
+		bagMaker.createBag();
 	}
 
 	private static void usage() {
 		System.out.println("usage: blu-xml-proc [flags] [DIRECTORY]");
 		System.out.println("");
 		System.out.println(
-				"Analyses XML eSafe export file and report details or enhance the XML export.");
+				"Analyses BluBaker XML eSafe export file and report details or enhance the XML export.");
 		System.out.println("");
 		System.out.println("  -h prints this message.");
 		System.out.println("  -o output enanced XML to STDOUT.");

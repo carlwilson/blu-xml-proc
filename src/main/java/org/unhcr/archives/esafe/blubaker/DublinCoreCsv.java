@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.unhcr.archives.esafe.blubaker.model.Record;
+import org.unhcr.archives.utils.Formatters;
 
 import com.opencsv.CSVWriter;
 
@@ -34,7 +35,7 @@ public final class DublinCoreCsv {
 					String relPath = RecordProcessor.getRelPath(dataRoot.getParent(),
 							RecordProcessor.findExportedFile(dataRoot, record));
 					String[] recordMd = new String[] { relPath, record.object.name, record.object.description,
-							ElementProcessor.formatDate(record.auditInfo.created), record.file.mimeType };
+							Formatters.formatDate(record.auditInfo.created), record.file.mimeType };
 					csvWriter.writeNext(recordMd);
 				}
 			}
