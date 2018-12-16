@@ -4,6 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+
+import org.unhcr.archives.isadg.IsadG;
+import org.unhcr.archives.isadg.UnitOfDescription;
 import org.unhcr.archives.utils.BagStructMaker;
 import org.xml.sax.SAXException;
 
@@ -29,7 +35,7 @@ public final class BluXmlProcessor {
 	 * @param args
 	 */
 	public static void main(String[] args)
-			throws SAXException, IOException, NoSuchAlgorithmException {
+			throws SAXException, IOException, NoSuchAlgorithmException, TransformerFactoryConfigurationError, TransformerException, ParserConfigurationException {
 		ProcessorOptions opts = ProcessorOptions.fromArgs(args);
 		if (opts.toProcess.isEmpty()) {
 			usage();
@@ -46,10 +52,12 @@ public final class BluXmlProcessor {
 	}
 
 	private static void processExport(final File toProcess)
-			throws IOException, SAXException, NoSuchAlgorithmException {
+			throws IOException, SAXException, NoSuchAlgorithmException, TransformerFactoryConfigurationError, TransformerException, ParserConfigurationException {
 		BluBakerXmlHandler handler = new BluBakerXmlHandler(toProcess.toPath());
 		RecordProcessor recProc = handler.processExports();
 		recProc.createDublinCore();
+		UnitOfDescription uod = IsadGTransformer.parseIsadGTree(recProc);
+		IsadG.toEadXmlDocument(toProcess.toPath(), uod);
 		BagStructMaker bagMaker = BagStructMaker.fromPath(toProcess.toPath(), recProc.getSize());
 		bagMaker.createBag();
 	}

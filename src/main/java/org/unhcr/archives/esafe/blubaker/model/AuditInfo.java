@@ -11,11 +11,11 @@ import java.util.Date;
  */
 public final class AuditInfo {
 	public final Date created;
-	final Date modified;
-	final String createdBy;
-	final int versionId;
-	final int versions;
-	final int maxVersions;
+	public final Date modified;
+	public final String createdBy;
+	public final int versionId;
+	public final int versions;
+	public final int maxVersions;
 
 	AuditInfo(final Date created, final Date modified, final String createdBy, final int versionId, final int versions,
 			final int maxVersions) {
@@ -33,6 +33,75 @@ public final class AuditInfo {
 		return "AuditInfo [created=" + created + ", modified=" + modified + ", createdBy=" + createdBy + ", versionId="
 				+ versionId + ", versions=" + versions + ", maxVersions=" + maxVersions + "]";
 	}
+
+	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((this.created == null) ? 0 : this.created.hashCode());
+		result = prime * result
+				+ ((this.createdBy == null) ? 0 : this.createdBy.hashCode());
+		result = prime * result + this.maxVersions;
+		result = prime * result
+				+ ((this.modified == null) ? 0 : this.modified.hashCode());
+		result = prime * result + this.versionId;
+		result = prime * result + this.versions;
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(java.lang.Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof AuditInfo)) {
+			return false;
+		}
+		AuditInfo other = (AuditInfo) obj;
+		if (this.created == null) {
+			if (other.created != null) {
+				return false;
+			}
+		} else if (!this.created.equals(other.created)) {
+			return false;
+		}
+		if (this.createdBy == null) {
+			if (other.createdBy != null) {
+				return false;
+			}
+		} else if (!this.createdBy.equals(other.createdBy)) {
+			return false;
+		}
+		if (this.maxVersions != other.maxVersions) {
+			return false;
+		}
+		if (this.modified == null) {
+			if (other.modified != null) {
+				return false;
+			}
+		} else if (!this.modified.equals(other.modified)) {
+			return false;
+		}
+		if (this.versionId != other.versionId) {
+			return false;
+		}
+		if (this.versions != other.versions) {
+			return false;
+		}
+		return true;
+	}
+
 
 	static class Builder {
 		private Date crtd = new Date();

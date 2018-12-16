@@ -36,6 +36,79 @@ public final class Record {
 				+ ", file=" + file + "]";
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((this.auditInfo == null) ? 0 : this.auditInfo.hashCode());
+		result = prime * result
+				+ ((this.details == null) ? 0 : this.details.hashCode());
+		result = prime * result
+				+ ((this.file == null) ? 0 : this.file.hashCode());
+		result = prime * result
+				+ ((this.object == null) ? 0 : this.object.hashCode());
+		result = prime * result
+				+ ((this.owner == null) ? 0 : this.owner.hashCode());
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(java.lang.Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Record)) {
+			return false;
+		}
+		Record other = (Record) obj;
+		if (this.auditInfo == null) {
+			if (other.auditInfo != null) {
+				return false;
+			}
+		} else if (!this.auditInfo.equals(other.auditInfo)) {
+			return false;
+		}
+		if (this.details == null) {
+			if (other.details != null) {
+				return false;
+			}
+		} else if (!this.details.equals(other.details)) {
+			return false;
+		}
+		if (this.file == null) {
+			if (other.file != null) {
+				return false;
+			}
+		} else if (!this.file.equals(other.file)) {
+			return false;
+		}
+		if (this.object == null) {
+			if (other.object != null) {
+				return false;
+			}
+		} else if (!this.object.equals(other.object)) {
+			return false;
+		}
+		if (this.owner == null) {
+			if (other.owner != null) {
+				return false;
+			}
+		} else if (!this.owner.equals(other.owner)) {
+			return false;
+		}
+		return true;
+	}
+
 	public static class Builder {
 		private Details.Builder detBld = new Details.Builder();
 		private Owner.Builder ownBld = new Owner.Builder();

@@ -26,6 +26,65 @@ public final class File {
 		return "File [exportPath=" + exportPath + ", name=" + name + ", size=" + size + ", mimeType=" + mimeType + "]";
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((this.exportPath == null) ? 0 : this.exportPath.hashCode());
+		result = prime * result
+				+ ((this.mimeType == null) ? 0 : this.mimeType.hashCode());
+		result = prime * result
+				+ ((this.name == null) ? 0 : this.name.hashCode());
+		result = prime * result + this.size;
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(java.lang.Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof File)) {
+			return false;
+		}
+		File other = (File) obj;
+		if (this.exportPath == null) {
+			if (other.exportPath != null) {
+				return false;
+			}
+		} else if (!this.exportPath.equals(other.exportPath)) {
+			return false;
+		}
+		if (this.mimeType == null) {
+			if (other.mimeType != null) {
+				return false;
+			}
+		} else if (!this.mimeType.equals(other.mimeType)) {
+			return false;
+		}
+		if (this.name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!this.name.equals(other.name)) {
+			return false;
+		}
+		if (this.size != other.size) {
+			return false;
+		}
+		return true;
+	}
+
 	static class Builder {
 		private String pth = "";
 		private String nm = "";

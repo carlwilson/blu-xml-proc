@@ -7,8 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.unhcr.archives.esafe.blubaker.model.Record;
 
@@ -17,7 +17,7 @@ import org.unhcr.archives.esafe.blubaker.model.Record;
  *
  */
 public final class RecordProcessor {
-	final List<Record> records = new ArrayList<>();
+	final Map<Integer, Record> records = new HashMap<>();
 	final Path exportRoot;
 	final Path dataRoot;
 
@@ -27,12 +27,12 @@ public final class RecordProcessor {
 	}
 
 	void addRecord(final Record record) {
-		this.records.add(record);
+		this.records.put(Integer.valueOf(record.details.id), record);
 	}
 
 	public int getSize() {
 		int sizeInBytes = 0;
-		for (Record record : this.records) {
+		for (Record record : this.records.values()) {
 			if (record.isFile()) {
 				sizeInBytes += record.file.size;
 			}
@@ -49,7 +49,7 @@ public final class RecordProcessor {
 	}
 
 	public void createDublinCore() throws IOException {
-		DublinCoreCsv.writeMetadata(this.dataRoot, this.records);
+		DublinCoreCsv.writeMetadata(this.dataRoot, this.records.values());
 	}
 
 	public static File findExportedFile(final Path dataRoot,

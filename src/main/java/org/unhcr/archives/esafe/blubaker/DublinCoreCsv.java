@@ -9,7 +9,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Collection;
 
 import org.unhcr.archives.esafe.blubaker.model.Record;
 import org.unhcr.archives.utils.Formatters;
@@ -25,7 +25,7 @@ public final class DublinCoreCsv {
 			"dc.title", "dc.description", "dc.date", "dc.format" };
 
 	public static void writeMetadata(final Path dataRoot,
-			final List<Record> records) throws IOException {
+			final Collection<Record> records) throws IOException {
 		File mdDir = new File(dataRoot.getParent().toString(), "metadata");
 		mdDir.mkdir();
 		try (Writer writer = Files

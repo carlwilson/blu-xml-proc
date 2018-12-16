@@ -8,8 +8,8 @@ package org.unhcr.archives.esafe.blubaker.model;
  *
  */
 public final class Owner {
-	final int id;
-	final String name;
+	public final int id;
+	public final String name;
 
 	Owner(final int id, final String name) {
 		super();
@@ -20,6 +20,47 @@ public final class Owner {
 	@Override
 	public String toString() {
 		return "Owner [id=" + id + ", name=" + name + "]";
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + this.id;
+		result = prime * result
+				+ ((this.name == null) ? 0 : this.name.hashCode());
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(java.lang.Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Owner)) {
+			return false;
+		}
+		Owner other = (Owner) obj;
+		if (this.id != other.id) {
+			return false;
+		}
+		if (this.name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!this.name.equals(other.name)) {
+			return false;
+		}
+		return true;
 	}
 
 	static class Builder {

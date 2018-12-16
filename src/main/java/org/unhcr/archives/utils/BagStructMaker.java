@@ -2,13 +2,16 @@ package org.unhcr.archives.utils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import gov.loc.repository.bagit.creator.BagCreator;
 import gov.loc.repository.bagit.domain.Bag;
+import gov.loc.repository.bagit.domain.Manifest;
 import gov.loc.repository.bagit.domain.Metadata;
 import gov.loc.repository.bagit.domain.Version;
 import gov.loc.repository.bagit.exceptions.FileNotInPayloadDirectoryException;
@@ -20,6 +23,8 @@ import gov.loc.repository.bagit.exceptions.MissingPayloadManifestException;
 import gov.loc.repository.bagit.exceptions.UnsupportedAlgorithmException;
 import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
 import gov.loc.repository.bagit.verify.BagVerifier;
+import gov.loc.repository.bagit.writer.BagitFileWriter;
+import gov.loc.repository.bagit.writer.ManifestWriter;
 
 /**
  * @author <a href="mailto:carl@openpreservation.org">Carl Wilson</a>
@@ -49,7 +54,8 @@ public final class BagStructMaker {
 		Bag bag = BagCreator.bagInPlace(this.bagRoot, Arrays.asList(algorithm),
 				false, defaultMd(sizeInBytes));
 		Version version = new Version(0, 97);
-		bag.setVersion(version);
+		BagitFileWriter.writeBagitFile(version, Charset.forName("UTF-8"),
+				this.bagRoot);
 		try {
 			verfifyBag(bag);
 		} catch (InterruptedException | MaliciousPathException

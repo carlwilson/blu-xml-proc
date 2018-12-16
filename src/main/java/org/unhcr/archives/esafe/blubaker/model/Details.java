@@ -24,6 +24,48 @@ public final class Details {
 		return "Details [id=" + id + ", parentId=" + parentId + ", subType=" + subType + "]";
 	}
 
+	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + this.id;
+		result = prime * result + this.parentId;
+		result = prime * result + this.subType;
+		return result;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(java.lang.Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Details)) {
+			return false;
+		}
+		Details other = (Details) obj;
+		if (this.id != other.id) {
+			return false;
+		}
+		if (this.parentId != other.parentId) {
+			return false;
+		}
+		if (this.subType != other.subType) {
+			return false;
+		}
+		return true;
+	}
+
+
 	static class Builder {
 		private int ident = -1;
 		private int prntId = -1;
