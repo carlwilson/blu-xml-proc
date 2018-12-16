@@ -21,7 +21,7 @@ public final class Details {
 	
 	@Override
 	public String toString() {
-		return "Details [id=" + id + ", parentId=" + parentId + ", subType=" + subType + "]";
+		return "Details [id=" + this.id + ", parentId=" + this.parentId + ", subType=" + this.subType + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 
 	

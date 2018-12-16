@@ -34,7 +34,7 @@ public final class BluBakerXmlHandler extends DefaultHandler {
 			saxParser = spf.newSAXParser();
 		} catch (ParserConfigurationException | SAXException excep) {
 			throw new IllegalStateException(
-					"Couldn't initialise SAX XML Parser.", excep);
+					"Couldn't initialise SAX XML Parser.", excep); //$NON-NLS-1$
 		}
 	}
 	private String currEleName;
@@ -45,12 +45,12 @@ public final class BluBakerXmlHandler extends DefaultHandler {
 	public BluBakerXmlHandler(final Path exportRoot) {
 		this.recProc = new RecordProcessor(exportRoot);
 	}
-	
+
 	public RecordProcessor processExports() throws IOException, SAXException {
 		File dirToParse = this.recProc.exportRoot.toFile();
 		for (File child : dirToParse.listFiles()) {
 			if (child.isFile()
-					&& child.getName().toLowerCase().endsWith(".xml")) {
+					&& child.getName().toLowerCase().endsWith(".xml")) { //$NON-NLS-1$
 				saxParser.parse(child, this);
 			}
 		}
@@ -64,7 +64,7 @@ public final class BluBakerXmlHandler extends DefaultHandler {
 
 	@Override
 	public void endDocument() {
-		assert(this.eleProc.getRecordCount() == this.eleProc.getMaxRecNum());
+		assert (this.eleProc.getRecordCount() == this.eleProc.getMaxRecNum());
 	}
 
 	@Override
@@ -87,14 +87,15 @@ public final class BluBakerXmlHandler extends DefaultHandler {
 			Record rec = this.eleProc.buildRecord();
 			this.recProc.addRecord(rec);
 		} else {
-			this.eleProc.processElement(this.currEleName, this.buffer.voidBuffer().trim());
+			this.eleProc.processElement(this.currEleName,
+					this.buffer.voidBuffer().trim());
 		}
-	
+
 	}
 
 	private static String deriveEleName(final String sName,
 			final String qName) {
-		return ("".equals(sName)) ? qName : sName; // element name
+		return ("".equals(sName)) ? qName : sName; // element name //$NON-NLS-1$
 	}
 
 	@Override

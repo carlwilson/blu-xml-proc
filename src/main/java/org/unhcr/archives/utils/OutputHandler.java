@@ -26,7 +26,7 @@ public final class OutputHandler {
 	 * Default constructor, output to STDOUT
 	 */
 	public OutputHandler() throws UnsupportedEncodingException {
-		this.out = new OutputStreamWriter(System.out, "UTF8");
+		this.out = new OutputStreamWriter(System.out, "UTF8"); //$NON-NLS-1$
 	}
 
 	/**
@@ -34,7 +34,7 @@ public final class OutputHandler {
 	 */
 	public OutputHandler(final File xmlFile) throws IOException {
 		File parent = xmlFile.getParentFile();
-		File output = new File(parent, xmlFile.getName() + ".fix");
+		File output = new File(parent, xmlFile.getName() + ".fix"); //$NON-NLS-1$
 		this.out = new FileWriter(output);
 	}
 
@@ -57,18 +57,18 @@ public final class OutputHandler {
 			this.out.write(s);
 			this.out.flush();
 		} catch (IOException e) {
-			throw new SAXException("I/O error", e);
+			throw new SAXException("I/O error", e); //$NON-NLS-1$
 		}
 	}
 
 	// Start a new line
 	public void nl() throws SAXException {
-		String lineEnd = System.getProperty("line.separator");
+		String lineEnd = System.getProperty("line.separator"); //$NON-NLS-1$
 		try {
 			this.out.write(lineEnd);
 			this.out.flush();
 		} catch (IOException e) {
-			throw new SAXException("I/O error", e);
+			throw new SAXException("I/O error", e); //$NON-NLS-1$
 		}
 	}
 

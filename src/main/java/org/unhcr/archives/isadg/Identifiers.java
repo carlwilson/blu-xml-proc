@@ -31,9 +31,9 @@ public final class Identifiers {
 	 */
 	@Override
 	public String toString() {
-		return "Identifiers [referenceCode=" + this.referenceCode
-				+ ", alternativeIdentifiers=" + this.alternativeIdentifiers
-				+ "]";
+		return "Identifiers [referenceCode=" + this.referenceCode //$NON-NLS-1$
+				+ ", alternativeIdentifiers=" + this.alternativeIdentifiers //$NON-NLS-1$
+				+ "]"; //$NON-NLS-1$
 	}
 
 	/**

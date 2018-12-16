@@ -15,28 +15,28 @@ import org.xml.sax.Attributes;
  *
  */
 public final class ElementProcessor {
-	private final static String empty = "";
-	private final static String attId = "dataid";
-	private final static String attRecNumber = "number";
+	private final static String empty = ""; //$NON-NLS-1$
+	private final static String attId = "dataid"; //$NON-NLS-1$
+	private final static String attRecNumber = "number"; //$NON-NLS-1$
 
-	private final static String eleRecord = "record";
-	private final static String eleOwnerId = "ownerid";
-	private final static String eleParentId = "parentid";
-	private final static String eleVersionId = "versionid";
-	private final static String eleObjectExportPath = "objectexportpath";
-	private final static String eleObectPath = "objectpath";
-	private final static String eleFileName = "filename";
-	private final static String eleObjectName = "objectname";
-	private final static String eleSubType = "subtype";
-	private final static String eleCreatedDate = "createdate";
-	private final static String eleModifyDate = "modifydate";
-	private final static String eleObjectDescription = "objectdescription";
-	private final static String eleCreatedBy = "createdby";
-	private final static String eleOwner = "owner";
-	private final static String eleFileSize = "filesize";
-	private final static String eleMimeType = "mimetype";
-	private final static String eleMaxVersions = "maxversions";
-	private final static String eleVersions = "versions";
+	private final static String eleRecord = "record"; //$NON-NLS-1$
+	private final static String eleOwnerId = "ownerid"; //$NON-NLS-1$
+	private final static String eleParentId = "parentid"; //$NON-NLS-1$
+	private final static String eleVersionId = "versionid"; //$NON-NLS-1$
+	private final static String eleObjectExportPath = "objectexportpath"; //$NON-NLS-1$
+	private final static String eleObectPath = "objectpath"; //$NON-NLS-1$
+	private final static String eleFileName = "filename"; //$NON-NLS-1$
+	private final static String eleObjectName = "objectname"; //$NON-NLS-1$
+	private final static String eleSubType = "subtype"; //$NON-NLS-1$
+	private final static String eleCreatedDate = "createdate"; //$NON-NLS-1$
+	private final static String eleModifyDate = "modifydate"; //$NON-NLS-1$
+	private final static String eleObjectDescription = "objectdescription"; //$NON-NLS-1$
+	private final static String eleCreatedBy = "createdby"; //$NON-NLS-1$
+	private final static String eleOwner = "owner"; //$NON-NLS-1$
+	private final static String eleFileSize = "filesize"; //$NON-NLS-1$
+	private final static String eleMimeType = "mimetype"; //$NON-NLS-1$
+	private final static String eleMaxVersions = "maxversions"; //$NON-NLS-1$
+	private final static String eleVersions = "versions"; //$NON-NLS-1$
 
 	private Record.Builder recBuilder;
 	private int maxRecNum = 0;
@@ -49,7 +49,8 @@ public final class ElementProcessor {
 	public void recordStart(final Attributes atts) {
 		this.recBuilder = new Record.Builder();
 		this.recBuilder.id(Integer.parseInt(getId(atts)));
-		this.maxRecNum = (Integer.parseInt(getRecNumber(atts)) > this.maxRecNum) ? Integer.parseInt(getRecNumber(atts))
+		this.maxRecNum = (Integer.parseInt(getRecNumber(atts)) > this.maxRecNum)
+				? Integer.parseInt(getRecNumber(atts))
 				: this.maxRecNum;
 		this.recCount++;
 	}
@@ -149,7 +150,8 @@ public final class ElementProcessor {
 		return getAttValue(attrs, attRecNumber);
 	}
 
-	private static String getAttValue(final Attributes attrs, final String attName) {
+	private static String getAttValue(final Attributes attrs,
+			final String attName) {
 		if (attrs != null) {
 			for (int i = 0; i < attrs.getLength(); i++) {
 				String aName = attrs.getLocalName(i); // Attr name
@@ -166,7 +168,8 @@ public final class ElementProcessor {
 		try {
 			return Formatters.bluBakerDateFormatter.parse(date);
 		} catch (ParseException e) {
-			throw new IllegalArgumentException(String.format("Bad date value %s.", date), e);
+			throw new IllegalArgumentException(
+					String.format("Bad date value %s.", date), e); //$NON-NLS-1$
 		}
 	}
 }

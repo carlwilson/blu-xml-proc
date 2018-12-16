@@ -25,14 +25,12 @@ import org.unhcr.archives.isadg.UnitOfDescription;
 
 public final class IsadGTransformer {
 
-	/**
-	 * 
-	 */
 	private IsadGTransformer() {
-		// TODO Auto-generated constructor stub
+		throw new AssertionError("Should not happen"); //$NON-NLS-1$
 	}
 
-	public static UnitOfDescription parseIsadGTree(final RecordProcessor records) {
+	public static UnitOfDescription parseIsadGTree(
+			final RecordProcessor records) {
 		UnitOfDescription root = findRoot(records.records);
 		return populateChildren(root, records.records);
 	}
@@ -44,7 +42,7 @@ public final class IsadGTransformer {
 			if (!records
 					.containsKey(Integer.valueOf(record.details.parentId))) {
 				if (rootFound) {
-					throw new IllegalArgumentException("Multiple roots found");
+					throw new IllegalArgumentException("Multiple roots found"); //$NON-NLS-1$
 				}
 				rootFound = true;
 				root = unitOfDescriptionFromRecord(record);
@@ -69,7 +67,7 @@ public final class IsadGTransformer {
 			return parent;
 		for (Record record : recordsSet) {
 			UnitOfDescription child = unitOfDescriptionFromRecord(record,
-					record.isFile() ? "Item" : "File", parent);
+					record.isFile() ? "item" : "file", parent); //$NON-NLS-1$ //$NON-NLS-2$
 			if (!record.isFile()) {
 				child = isadChildProcessor(child, records);
 			}
@@ -97,7 +95,7 @@ public final class IsadGTransformer {
 
 	public static final UnitOfDescription unitOfDescriptionFromRecord(
 			final Record record) {
-		return unitOfDescriptionFromRecord(record, "Series");
+		return unitOfDescriptionFromRecord(record, "series"); //$NON-NLS-1$
 	}
 
 	public static final UnitOfDescription unitOfDescriptionFromRecord(

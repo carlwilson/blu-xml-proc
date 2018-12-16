@@ -27,9 +27,9 @@ public final class RecordDetails {
 	 */
 	@Override
 	public String toString() {
-		return "RecordDetails [title=" + this.title + ", scopeAndContent="
-				+ this.scopeAndContent + ", levelOfDescription="
-				+ this.levelOfDescription + "]";
+		return "RecordDetails [title=" + this.title + ", scopeAndContent=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ this.scopeAndContent + ", levelOfDescription=" //$NON-NLS-1$
+				+ this.levelOfDescription + "]"; //$NON-NLS-1$
 	}
 
 	/**

@@ -5,13 +5,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import gov.loc.repository.bagit.creator.BagCreator;
 import gov.loc.repository.bagit.domain.Bag;
-import gov.loc.repository.bagit.domain.Manifest;
 import gov.loc.repository.bagit.domain.Metadata;
 import gov.loc.repository.bagit.domain.Version;
 import gov.loc.repository.bagit.exceptions.FileNotInPayloadDirectoryException;
@@ -24,7 +22,6 @@ import gov.loc.repository.bagit.exceptions.UnsupportedAlgorithmException;
 import gov.loc.repository.bagit.hash.StandardSupportedAlgorithms;
 import gov.loc.repository.bagit.verify.BagVerifier;
 import gov.loc.repository.bagit.writer.BagitFileWriter;
-import gov.loc.repository.bagit.writer.ManifestWriter;
 
 /**
  * @author <a href="mailto:carl@openpreservation.org">Carl Wilson</a>
@@ -52,9 +49,9 @@ public final class BagStructMaker {
 
 	public Bag createBag() throws NoSuchAlgorithmException, IOException {
 		Bag bag = BagCreator.bagInPlace(this.bagRoot, Arrays.asList(algorithm),
-				false, defaultMd(sizeInBytes));
+				false, defaultMd(this.sizeInBytes));
 		Version version = new Version(0, 97);
-		BagitFileWriter.writeBagitFile(version, Charset.forName("UTF-8"),
+		BagitFileWriter.writeBagitFile(version, Charset.forName("UTF-8"), //$NON-NLS-1$
 				this.bagRoot);
 		try {
 			verfifyBag(bag);
@@ -86,15 +83,15 @@ public final class BagStructMaker {
 			final int sizeInBytes) throws FileNotFoundException {
 		if (!Files.isDirectory(bagRoot))
 			throw new FileNotFoundException(
-					String.format("Path %s must be an existing directory",
+					String.format("Path %s must be an existing directory", //$NON-NLS-1$
 							bagRoot.toString()));
 		return new BagStructMaker(bagRoot, sizeInBytes);
 	}
 
 	static Metadata defaultMd(final int sizeInBytes) {
 		Metadata md = new Metadata();
-		md.add("Bag-Group-Identifier", "esafe_blubaker");
-		md.add("Bag-Size",
+		md.add("Bag-Group-Identifier", "esafe_blubaker"); //$NON-NLS-1$ //$NON-NLS-2$
+		md.add("Bag-Size", //$NON-NLS-1$
 				Formatters.humanReadableByteCount(sizeInBytes, false));
 		return md;
 	}

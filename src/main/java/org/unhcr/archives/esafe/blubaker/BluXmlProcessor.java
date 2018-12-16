@@ -34,8 +34,9 @@ public final class BluXmlProcessor {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args)
-			throws SAXException, IOException, NoSuchAlgorithmException, TransformerFactoryConfigurationError, TransformerException, ParserConfigurationException {
+	public static void main(String[] args) throws SAXException, IOException,
+			NoSuchAlgorithmException, TransformerFactoryConfigurationError,
+			TransformerException, ParserConfigurationException {
 		ProcessorOptions opts = ProcessorOptions.fromArgs(args);
 		if (opts.toProcess.isEmpty()) {
 			usage();
@@ -52,25 +53,28 @@ public final class BluXmlProcessor {
 	}
 
 	private static void processExport(final File toProcess)
-			throws IOException, SAXException, NoSuchAlgorithmException, TransformerFactoryConfigurationError, TransformerException, ParserConfigurationException {
+			throws IOException, SAXException, NoSuchAlgorithmException,
+			TransformerFactoryConfigurationError, TransformerException,
+			ParserConfigurationException {
 		BluBakerXmlHandler handler = new BluBakerXmlHandler(toProcess.toPath());
 		RecordProcessor recProc = handler.processExports();
 		recProc.createDublinCore();
 		UnitOfDescription uod = IsadGTransformer.parseIsadGTree(recProc);
 		IsadG.toEadXmlDocument(toProcess.toPath(), uod);
-		BagStructMaker bagMaker = BagStructMaker.fromPath(toProcess.toPath(), recProc.getSize());
+		BagStructMaker bagMaker = BagStructMaker.fromPath(toProcess.toPath(),
+				recProc.getSize());
 		bagMaker.createBag();
 	}
 
 	private static void usage() {
-		System.out.println("usage: blu-xml-proc [flags] [DIRECTORY]");
-		System.out.println("");
+		System.out.println("usage: blu-xml-proc [flags] [DIRECTORY]"); //$NON-NLS-1$
+		System.out.println(""); //$NON-NLS-1$
 		System.out.println(
-				"Analyses BluBaker XML eSafe export file and report details or enhance the XML export.");
-		System.out.println("");
-		System.out.println("  -h prints this message.");
-		System.out.println("  -o output enanced XML to STDOUT.");
+				"Analyses BluBaker XML eSafe export file and report details or enhance the XML export."); //$NON-NLS-1$
+		System.out.println(""); //$NON-NLS-1$
+		System.out.println("  -h prints this message."); //$NON-NLS-1$
+		System.out.println("  -o output enanced XML to STDOUT."); //$NON-NLS-1$
 		System.out.println(
-				"  -f send enanced XML output to .fix file rather than STDOUT.");
+				"  -f send enanced XML output to .fix file rather than STDOUT."); //$NON-NLS-1$
 	}
 }

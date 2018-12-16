@@ -13,7 +13,8 @@ public final class File {
 	public final int size;
 	public final String mimeType;
 
-	File(final String path, final String name, final int size, final String mimeType) {
+	File(final String path, final String name, final int size,
+			final String mimeType) {
 		super();
 		this.exportPath = path;
 		this.name = name;
@@ -23,7 +24,8 @@ public final class File {
 
 	@Override
 	public String toString() {
-		return "File [exportPath=" + exportPath + ", name=" + name + ", size=" + size + ", mimeType=" + mimeType + "]";
+		return "File [exportPath=" + this.exportPath + ", name=" + this.name //$NON-NLS-1$ //$NON-NLS-2$
+				+ ", size=" + this.size + ", mimeType=" + this.mimeType + "]";  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/**
@@ -86,10 +88,10 @@ public final class File {
 	}
 
 	static class Builder {
-		private String pth = "";
-		private String nm = "";
+		private String pth = ""; //$NON-NLS-1$
+		private String nm = ""; //$NON-NLS-1$
 		private int sz = -1;
-		private String mme = "";
+		private String mme = ""; //$NON-NLS-1$
 
 		public Builder exportPath(final String exportPath) {
 			this.pth = exportPath;

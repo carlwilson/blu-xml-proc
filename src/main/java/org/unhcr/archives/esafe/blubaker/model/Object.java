@@ -1,6 +1,7 @@
 package org.unhcr.archives.esafe.blubaker.model;
 
 public class Object {
+	final static String empty = ""; //$NON-NLS-1$
 	public final String path;
 	public final String name;
 	public final String description;
@@ -13,7 +14,7 @@ public class Object {
 
 	@Override
 	public String toString() {
-		return "Object [path=" + path + ", name=" + name + ", description=" + description + "]";
+		return "Object [path=" + this.path + ", name=" + this.name + ", description=" + this.description + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 
 	/**
@@ -72,9 +73,9 @@ public class Object {
 	}
 
 	static class Builder {
-		private String pth ="";
-		private String nm = "";
-		private String dsc = "";
+		private String pth = empty; 
+		private String nm = empty; 
+		private String dsc = empty; 
 		
 		Builder path(final String path) {
 			this.pth = path;

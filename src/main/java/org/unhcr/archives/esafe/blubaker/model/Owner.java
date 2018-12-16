@@ -19,7 +19,7 @@ public final class Owner {
 
 	@Override
 	public String toString() {
-		return "Owner [id=" + id + ", name=" + name + "]";
+		return "Owner [id=" + this.id + ", name=" + this.name + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/**
@@ -65,18 +65,18 @@ public final class Owner {
 
 	static class Builder {
 		private int ident = -1;
-		private String nm = "";
-		
+		private String nm = ""; //$NON-NLS-1$
+
 		Builder id(final int id) {
 			this.ident = id;
 			return this;
 		}
-		
+
 		Builder name(final String name) {
 			this.nm = name;
 			return this;
 		}
-		
+
 		Owner build() {
 			return new Owner(this.ident, this.nm);
 		}

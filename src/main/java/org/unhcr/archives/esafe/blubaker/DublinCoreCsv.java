@@ -21,15 +21,15 @@ import com.opencsv.CSVWriter;
  *
  */
 public final class DublinCoreCsv {
-	public static final String[] csvHeader = { "filename", "dc.identifier",
-			"dc.title", "dc.description", "dc.date", "dc.format" };
+	public static final String[] csvHeader = { "filename", "dc.identifier", //$NON-NLS-1$ //$NON-NLS-2$
+			"dc.title", "dc.description", "dc.date", "dc.format" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 	public static void writeMetadata(final Path dataRoot,
 			final Collection<Record> records) throws IOException {
-		File mdDir = new File(dataRoot.getParent().toString(), "metadata");
+		File mdDir = new File(dataRoot.getParent().toString(), "metadata"); //$NON-NLS-1$
 		mdDir.mkdir();
 		try (Writer writer = Files
-				.newBufferedWriter(Paths.get(mdDir.toString(), "metadata.csv"));
+				.newBufferedWriter(Paths.get(mdDir.toString(), "metadata.csv")); //$NON-NLS-1$
 				CSVWriter csvWriter = new CSVWriter(writer,
 						CSVWriter.DEFAULT_SEPARATOR,
 						CSVWriter.NO_QUOTE_CHARACTER,
@@ -42,7 +42,7 @@ public final class DublinCoreCsv {
 							dataRoot.getParent(),
 							RecordProcessor.findExportedFile(dataRoot, record));
 					String[] recordMd = new String[] { relPath,
-							"" + record.details.id, record.object.name,
+							"" + record.details.id, record.object.name, //$NON-NLS-1$
 							record.object.description,
 							Formatters.formatDcDate(record.auditInfo.created),
 							record.file.mimeType };

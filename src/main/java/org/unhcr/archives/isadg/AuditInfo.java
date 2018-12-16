@@ -13,8 +13,8 @@ import java.util.Map;
  */
 
 public final class AuditInfo {
-	final static String createdKey = "System creation date";
-	final static String modifedKey = "System modification date";
+	final static String createdKey = "System creation date"; //$NON-NLS-1$
+	final static String modifedKey = "System modification date"; //$NON-NLS-1$
 
 	public final String creator;
 	final Map<String, Date> dates = new HashMap<>();
@@ -69,8 +69,8 @@ public final class AuditInfo {
 	 */
 	@Override
 	public String toString() {
-		return "AuditInfo [creator=" + this.creator + ", dates=" + this.dates
-				+ ", ranges=" + this.ranges + "]";
+		return "AuditInfo [creator=" + this.creator + ", dates=" + this.dates //$NON-NLS-1$ //$NON-NLS-2$
+				+ ", ranges=" + this.ranges + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**

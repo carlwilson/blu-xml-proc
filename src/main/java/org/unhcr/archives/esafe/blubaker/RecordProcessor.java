@@ -43,9 +43,9 @@ public final class RecordProcessor {
 	public static String getRelPath(Path expRoot, File file) {
 		String relPath = expRoot.relativize(file.toPath().toAbsolutePath())
 				.toString();
-		if (relPath.startsWith("./"))
-			relPath = relPath.replaceFirst("./", "");
-		return "data/" + relPath;
+		if (relPath.startsWith("./")) //$NON-NLS-1$
+			relPath = relPath.replaceFirst("./", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		return "data/" + relPath; //$NON-NLS-1$
 	}
 
 	public void createDublinCore() throws IOException {
@@ -63,16 +63,16 @@ public final class RecordProcessor {
 			// mangling
 			// Then substitute a real path separator for the colons
 			recExpPath = Paths.get(
-					record.object.path.replace("/", "_").replace(":", "\\"));
+					record.object.path.replace("/", "_").replace(":", "\\")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		// Now look for the root part of the path, usually the "Enterprise"
 		// folder
 		String expPathStr = recExpPath.toString();
 		boolean rootFound = false;
-		Path relRecPath = Paths.get(".");
+		Path relRecPath = Paths.get("."); //$NON-NLS-1$
 		// Split the path into parts
-		String[] pathParts = (expPathStr.contains("\\"))
-				? expPathStr.split("\\\\")
+		String[] pathParts = (expPathStr.contains("\\")) //$NON-NLS-1$
+				? expPathStr.split("\\\\") //$NON-NLS-1$
 				: new String[] { expPathStr };
 		for (String pathPart : pathParts) {
 			if (pathPart.equals(dataRoot.getFileName().toString())
@@ -92,7 +92,7 @@ public final class RecordProcessor {
 			// un-mangle BluBakers file path
 			expFile = Paths
 					.get(exportRoot.toString(), relRecPath.toString(),
-							record.file.name.replace("/", "_"))
+							record.file.name.replace("/", "_")) //$NON-NLS-1$ //$NON-NLS-2$
 					.toAbsolutePath().toFile();
 		}
 		// Return the file whether it exists or not
@@ -110,7 +110,7 @@ public final class RecordProcessor {
 		}
 		if (dirCount > 1) {
 			throw new IllegalArgumentException(
-					"More than one directory in export");
+					"More than one directory in export"); //$NON-NLS-1$
 		}
 
 		return dataRoot;

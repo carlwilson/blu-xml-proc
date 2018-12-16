@@ -71,8 +71,8 @@ public final class ArchivalHistory {
 	 */
 	@Override
 	public String toString() {
-		return "ArchivalHistory [exported=" + this.exported + ", objectPath="
-				+ this.objectPath + "]";
+		return "ArchivalHistory [exported=" + this.exported + ", objectPath=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ this.objectPath + "]"; //$NON-NLS-1$
 	}
 
 }

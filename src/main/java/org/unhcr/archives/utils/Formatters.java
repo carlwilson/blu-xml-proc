@@ -16,10 +16,10 @@ public enum Formatters {
 	INSTANCE;
 
 	public static SimpleDateFormat bluBakerDateFormatter = new SimpleDateFormat(
-			"mm/dd/yyyy");
+			"mm/dd/yyyy"); //$NON-NLS-1$
 
 	public static SimpleDateFormat dcDateFormatter = new SimpleDateFormat(
-			"yyyy-mm-dd");
+			"yyyy-mm-dd"); //$NON-NLS-1$
 
 	public static String formatBluBakerDate(final Date date) {
 		return bluBakerDateFormatter.format(date);
@@ -33,11 +33,11 @@ public enum Formatters {
 	public static String humanReadableByteCount(long bytes, boolean si) {
 		int unit = si ? 1000 : 1024;
 		if (bytes < unit)
-			return bytes + " B";
+			return bytes + " B"; //$NON-NLS-1$
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
-		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1)
-				+ (si ? "" : "i");
-		return String.format("%.1f %sB",
+		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) //$NON-NLS-1$ //$NON-NLS-2$
+				+ (si ? "" : "i"); //$NON-NLS-1$ //$NON-NLS-2$
+		return String.format("%.1f %sB", //$NON-NLS-1$
 				Double.valueOf(bytes / Math.pow(unit, exp)), pre);
 	}
 }

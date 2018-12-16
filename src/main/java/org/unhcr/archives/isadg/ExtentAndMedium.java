@@ -23,8 +23,8 @@ public final class ExtentAndMedium {
 	 */
 	@Override
 	public String toString() {
-		return "ExtentAndMedium [size=" + this.size + ", versions="
-				+ this.versions + "]";
+		return "ExtentAndMedium [size=" + this.size + ", versions=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ this.versions + "]"; //$NON-NLS-1$
 	}
 
 	/**

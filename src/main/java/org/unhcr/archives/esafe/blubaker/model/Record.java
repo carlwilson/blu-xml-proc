@@ -16,8 +16,8 @@ public final class Record {
 	public final Object object;
 	public final File file;
 
-	Record(final Details details, final Owner owner, final AuditInfo auditInfo, final Object object,
-			final File file) {
+	Record(final Details details, final Owner owner, final AuditInfo auditInfo,
+			final Object object, final File file) {
 		super();
 		this.details = details;
 		this.owner = owner;
@@ -32,8 +32,9 @@ public final class Record {
 
 	@Override
 	public String toString() {
-		return "Record [details=" + details + ", owner=" + owner + ", auditInfo=" + auditInfo + ", object=" + object
-				+ ", file=" + file + "]";
+		return "Record [details=" + this.details + ", owner=" + this.owner //$NON-NLS-1$ //$NON-NLS-2$
+				+ ", auditInfo=" + this.auditInfo + ", object=" + this.object  //$NON-NLS-1$ //$NON-NLS-2$
+				+ ", file=" + this.file + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -190,7 +191,7 @@ public final class Record {
 			this.flBld.exportPath(exportPath);
 			return this;
 		}
-		
+
 		public Builder fileName(final String fileName) {
 			this.flBld.name(fileName);
 			return this;
@@ -207,7 +208,8 @@ public final class Record {
 		}
 
 		public Record build() {
-			return new Record(this.detBld.build(), this.ownBld.build(), this.audBld.build(), this.objBld.build(),
+			return new Record(this.detBld.build(), this.ownBld.build(),
+					this.audBld.build(), this.objBld.build(),
 					this.flBld.build());
 		}
 	}

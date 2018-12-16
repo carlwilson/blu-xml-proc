@@ -29,7 +29,7 @@ public class UnitOfDescription {
 	}
 
 	public Set<UnitOfDescription> getChildren() {
-		return Collections.unmodifiableSet(children);
+		return Collections.unmodifiableSet(this.children);
 	}
 
 	public void setChildren(Set<UnitOfDescription> children) {
@@ -42,13 +42,13 @@ public class UnitOfDescription {
 	 */
 	@Override
 	public String toString() {
-		return "UnitOfDescription [parent="
-				+ ((this.parent == null) ? "null"
+		return "UnitOfDescription [parent=" //$NON-NLS-1$
+				+ ((this.parent == null) ? "null" //$NON-NLS-1$
 						: this.parent.identifiers.referenceCode)
-				+ ", identifiers=" + this.identifiers + ", auditInfo="
-				+ this.auditInfo + ", extent=" + this.extent + ", details="
-				+ this.details + ", history=" + this.history + ", children="
-				+ this.children + "]";
+				+ ", identifiers=" + this.identifiers + ", auditInfo=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ this.auditInfo + ", extent=" + this.extent + ", details=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ this.details + ", history=" + this.history + ", children=" //$NON-NLS-1$ //$NON-NLS-2$
+				+ this.children + "]"; //$NON-NLS-1$
 	}
 
 	/**

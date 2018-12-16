@@ -37,13 +37,13 @@ public final class ProcessorOptions {
 		boolean isEnhanced = false;
 		boolean isUsage = false;
 		for (String arg : args) {
-			if (arg.equals("-h")) {
+			if (arg.equals("-h")) { //$NON-NLS-1$
 				isUsage = true;
 			}
-			if (arg.equals("-o")) {
+			if (arg.equals("-o")) { //$NON-NLS-1$
 				isEnhanced = true;
 				continue;
-			} else if (arg.equals("-f")) {
+			} else if (arg.equals("-f")) { //$NON-NLS-1$
 				isEnhanced = isToFile = true;
 				continue;
 			}
@@ -51,7 +51,7 @@ public final class ProcessorOptions {
 			if (toTest.isDirectory()) {
 				toProcess.add(toTest);
 			} else {
-				throw new FileNotFoundException(String.format("Could not find directory: %s",
+				throw new FileNotFoundException(String.format("Could not find directory: %s", //$NON-NLS-1$
 						toTest.getAbsolutePath()));
 			}
 		}

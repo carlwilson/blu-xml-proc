@@ -30,8 +30,8 @@ public final class AuditInfo {
 	
 	@Override
 	public String toString() {
-		return "AuditInfo [created=" + created + ", modified=" + modified + ", createdBy=" + createdBy + ", versionId="
-				+ versionId + ", versions=" + versions + ", maxVersions=" + maxVersions + "]";
+		return "AuditInfo [created=" + this.created + ", modified=" + this.modified + ", createdBy=" + this.createdBy + ", versionId="  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				+ this.versionId + ", versions=" + this.versions + ", maxVersions=" + this.maxVersions + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	
@@ -106,7 +106,7 @@ public final class AuditInfo {
 	static class Builder {
 		private Date crtd = new Date();
 		private Date mdfd = new Date();
-		private String crtdBy = "";
+		private String crtdBy = ""; //$NON-NLS-1$
 		private int vrsnId = -1;
 		private int vrsns = -1;
 		private int mxVrsns = -1;
