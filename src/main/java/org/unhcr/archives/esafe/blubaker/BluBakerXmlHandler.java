@@ -2,13 +2,13 @@ package org.unhcr.archives.esafe.blubaker;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.unhcr.archives.esafe.blubaker.model.Record;
+import org.unhcr.archives.utils.ExportDetails;
 import org.unhcr.archives.utils.XmlCharBuffer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -42,12 +42,13 @@ public final class BluBakerXmlHandler extends DefaultHandler {
 	private final ElementProcessor eleProc = new ElementProcessor();
 	private final RecordProcessor recProc;
 
-	public BluBakerXmlHandler(final Path exportRoot) {
-		this.recProc = new RecordProcessor(exportRoot);
+	public BluBakerXmlHandler(final ExportDetails expDets) {
+		super();
+		this.recProc = new RecordProcessor(expDets);
 	}
 
 	public RecordProcessor processExports() throws IOException, SAXException {
-		File dirToParse = this.recProc.exportRoot.toFile();
+		File dirToParse = this.recProc.exportDetails.exportRoot.toFile();
 		for (File child : dirToParse.listFiles()) {
 			if (child.isFile()
 					&& child.getName().toLowerCase().endsWith(".xml")) { //$NON-NLS-1$

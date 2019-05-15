@@ -10,7 +10,7 @@ package org.unhcr.archives.esafe.blubaker.model;
 public final class Details {
 	public final int id;
 	public final int parentId;
-	final int subType;
+	public final int subType;
 	
 	Details (final int id, final int parentId, final int subType) {
 		super();

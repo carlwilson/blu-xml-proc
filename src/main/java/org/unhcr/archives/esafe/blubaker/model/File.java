@@ -22,6 +22,12 @@ public final class File {
 		this.mimeType = mimeType;
 	}
 
+	public boolean isFile() {
+		return (this.exportPath == null || this.exportPath.isEmpty())
+				&& (this.name == null || this.name.isEmpty()) && this.size == 0
+				&& (this.mimeType == null || this.mimeType.isEmpty());
+	}
+
 	@Override
 	public String toString() {
 		return "File [exportPath=" + this.exportPath + ", name=" + this.name //$NON-NLS-1$ //$NON-NLS-2$

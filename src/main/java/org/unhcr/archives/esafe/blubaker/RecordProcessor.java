@@ -4,26 +4,27 @@
 package org.unhcr.archives.esafe.blubaker;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.unhcr.archives.esafe.blubaker.model.Record;
+import org.unhcr.archives.utils.ExportDetails;
 
 /**
  * @author cfw
  *
  */
 public final class RecordProcessor {
+	public final ExportDetails exportDetails;
 	final Map<Integer, Record> records = new HashMap<>();
-	final Path exportRoot;
-	final Path dataRoot;
 
-	public RecordProcessor(final Path exportRoot) {
-		this.exportRoot = exportRoot.toAbsolutePath();
-		this.dataRoot = findDataRoot(this.exportRoot);
+	public RecordProcessor(final ExportDetails exportDetails) {
+		super();
+		this.exportDetails = exportDetails;
 	}
 
 	void addRecord(final Record record) {
@@ -40,31 +41,31 @@ public final class RecordProcessor {
 		return sizeInBytes;
 	}
 
-	public static String getRelPath(Path expRoot, File file) {
-		String relPath = expRoot.relativize(file.toPath().toAbsolutePath())
-				.toString();
+	public Map<Integer, Record> getRecordMap() {
+		return Collections.unmodifiableMap(this.records);
+	}
+
+	public static String getRelPath(Path expRoot, Path exportPath) {
+		Path expRootNorm = expRoot.normalize().toAbsolutePath();
+		Path other = exportPath.normalize().toAbsolutePath();
+		String relPath = expRootNorm.relativize(other).toString();
+		System.out.println("RelPath: " + relPath + "|"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (relPath.startsWith("./")) //$NON-NLS-1$
 			relPath = relPath.replaceFirst("./", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		return "data/" + relPath; //$NON-NLS-1$
 	}
 
-	public void createDublinCore() throws IOException {
-		DublinCoreCsv.writeMetadata(this.dataRoot, this.records.values());
-	}
-
 	public static File findExportedFile(final Path dataRoot,
 			final Record record) {
-		Path exportRoot = dataRoot.getParent();
+		if (record.isDirectory()) return null;
 		// Get the object export path path from the file
 		Path recExpPath = Paths.get(record.file.exportPath);
 		if (recExpPath.toString().isEmpty()) {
-			// If there's no export path hack a substitute from the object path
-			// First replace any existing "/" chars with _ to undo BluBaker's
-			// mangling
-			// Then substitute a real path separator for the colons
-			recExpPath = Paths.get(
-					record.object.path.replace("/", "_").replace(":", "\\")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			throw new IllegalStateException(MessageFormat.format(
+					"File record id: {0, number}, name: {1} has no file export path.", //$NON-NLS-1$
+					Integer.valueOf(record.details.id), record.object.name));
 		}
+		Path exportRoot = dataRoot.getParent();
 		// Now look for the root part of the path, usually the "Enterprise"
 		// folder
 		String expPathStr = recExpPath.toString();
@@ -99,20 +100,4 @@ public final class RecordProcessor {
 		return expFile;
 	}
 
-	private static Path findDataRoot(Path exportRoot) {
-		Path dataRoot = null;
-		int dirCount = 0;
-		for (File child : exportRoot.toFile().listFiles()) {
-			if (child.isDirectory()) {
-				dataRoot = child.toPath();
-				dirCount++;
-			}
-		}
-		if (dirCount > 1) {
-			throw new IllegalArgumentException(
-					"More than one directory in export"); //$NON-NLS-1$
-		}
-
-		return dataRoot;
-	}
 }

@@ -3,7 +3,12 @@
  */
 package org.unhcr.archives.esafe.blubaker.model;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.Date;
+
+import org.unhcr.archives.utils.ExportDetails;
 
 /**
  * @author cfw
@@ -24,6 +29,10 @@ public final class Record {
 		this.auditInfo = auditInfo;
 		this.object = object;
 		this.file = file;
+	}
+
+	public boolean isDirectory() {
+		return this.details.subType == 0;
 	}
 
 	public boolean isFile() {
@@ -108,6 +117,19 @@ public final class Record {
 			return false;
 		}
 		return true;
+	}
+
+	public Path getExportRelativePath(final ExportDetails exportDetails) throws BadRecordException {
+		if (!this.isFile()) return null;
+		Path exportRoot = exportDetails.exportRoot;
+		// Get the object export path path from the file
+		Path recExpPath = Paths.get(this.file.exportPath);
+		if (recExpPath.toString().isEmpty()) {
+			throw new BadRecordException(this.details.id, MessageFormat.format(
+					"File record id: {0, number}, name: {1} has no file export path.", //$NON-NLS-1$
+					Integer.valueOf(this.details.id), this.object.name));
+		}
+		return exportRoot.normalize().toAbsolutePath().relativize(recExpPath.normalize().toAbsolutePath());
 	}
 
 	public static class Builder {
