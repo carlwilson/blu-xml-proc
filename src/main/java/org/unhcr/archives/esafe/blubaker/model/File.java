@@ -3,35 +3,103 @@
  */
 package org.unhcr.archives.esafe.blubaker.model;
 
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author cfw
  *
  */
 public final class File {
+	private final static Map<Character, Character> createCharMap() {
+		Map<Character, Character> retVal = new HashMap<Character, Character>();
+		// -> !
+		retVal.put(Character.valueOf((char) 0x00A1), Character.valueOf((char) 0x0021));
+		// -> -
+		retVal.put(Character.valueOf((char) 0x00ad), Character.valueOf((char) 0x002D));
+		// -> -
+		retVal.put(Character.valueOf((char) 0x2010), Character.valueOf((char) 0x002D));
+		// -> -
+		retVal.put(Character.valueOf((char) 0x2011), Character.valueOf((char) 0x002D));
+		// -> -
+		retVal.put(Character.valueOf((char) 0x2012), Character.valueOf((char) 0x002D));
+		// -> -
+		retVal.put(Character.valueOf((char) 0x2013), Character.valueOf((char) 0x002D));
+		// -> -
+		retVal.put(Character.valueOf((char) 0x2014), Character.valueOf((char) 0x002D));
+		// -> -
+		retVal.put(Character.valueOf((char) 0x2015), Character.valueOf((char) 0x002D));
+		// -> |
+		retVal.put(Character.valueOf((char) 0x2016), Character.valueOf((char) 0x007C));
+		// -> '
+		retVal.put(Character.valueOf((char) 0x2018), Character.valueOf((char) 0x0027));
+		// -> '
+		retVal.put(Character.valueOf((char) 0x2019), Character.valueOf((char) 0x0027));
+		// -> '
+		retVal.put(Character.valueOf((char) 0x201B), Character.valueOf((char) 0x0027));
+		// -> '
+		retVal.put(Character.valueOf((char) 0x201C), Character.valueOf((char) 0x0027));
+		// -> '
+		retVal.put(Character.valueOf((char) 0x201D), Character.valueOf((char) 0x0027));
+		// -> '
+		retVal.put(Character.valueOf((char) 0x201F), Character.valueOf((char) 0x0027));
+		// -> ,
+		retVal.put(Character.valueOf((char) 0x201A), Character.valueOf((char) 0x002C));
+		// -> ,
+		retVal.put(Character.valueOf((char) 0x201E), Character.valueOf((char) 0x002C));
+		// -> 2
+		retVal.put(Character.valueOf((char) 0x00B2), Character.valueOf((char) 0x0032));
+		// -> A
+		retVal.put(Character.valueOf((char) 0x00C0), Character.valueOf((char) 0x0041));
+		// -> a
+		retVal.put(Character.valueOf((char) 0x00E0), Character.valueOf((char) 0x0061));
+		// -> c
+		retVal.put(Character.valueOf((char) 0x00A9), Character.valueOf((char) 0x0063));
+		// -> c
+		retVal.put(Character.valueOf((char) 0x00E7), Character.valueOf((char) 0x0063));
+		// -> E
+		retVal.put(Character.valueOf((char) 0x00C8), Character.valueOf((char) 0x0045));
+		// -> E
+		retVal.put(Character.valueOf((char) 0x00C9), Character.valueOf((char) 0x0045));
+		// -> e
+		retVal.put(Character.valueOf((char) 0x00E8), Character.valueOf((char) 0x0065));
+		// -> e
+		retVal.put(Character.valueOf((char) 0x00E9), Character.valueOf((char) 0x0065));
+		// -> e
+		retVal.put(Character.valueOf((char) 0x00EA), Character.valueOf((char) 0x0065));
+		// -> o
+		retVal.put(Character.valueOf((char) 0x00A4), Character.valueOf((char) 0x006F));
+		// -> o
+		retVal.put(Character.valueOf((char) 0x00B0), Character.valueOf((char) 0x006F));
+		// -> o
+		retVal.put(Character.valueOf((char) 0x00F4), Character.valueOf((char) 0x006F));
+		return Collections.unmodifiableMap(retVal);
+	}
+	
+	public final static Map<Character, Character> CHARACTER_MAP = createCharMap();
+	public final static Set<Character> UNMAPPED = new HashSet<>();
+	public final static Character DEFAULT_CHAR = '_';
 	public final String exportPath;
 	public final String name;
 	public final int size;
 	public final String mimeType;
 
-	File(final String path, final String name, final int size,
-			final String mimeType) {
+	File(final String path, final String name, final int size, final String mimeType) {
 		super();
-		this.exportPath = path;
-		this.name = name;
+		this.exportPath = cleanPathName(path);
+		this.name = cleanPathName(name);
 		this.size = size;
 		this.mimeType = mimeType;
-	}
-
-	public boolean isFile() {
-		return (this.exportPath == null || this.exportPath.isEmpty())
-				&& (this.name == null || this.name.isEmpty()) && this.size == 0
-				&& (this.mimeType == null || this.mimeType.isEmpty());
 	}
 
 	@Override
 	public String toString() {
 		return "File [exportPath=" + this.exportPath + ", name=" + this.name //$NON-NLS-1$ //$NON-NLS-2$
-				+ ", size=" + this.size + ", mimeType=" + this.mimeType + "]";  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				+ ", size=" + this.size + ", mimeType=" + this.mimeType + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/**
@@ -41,12 +109,9 @@ public final class File {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((this.exportPath == null) ? 0 : this.exportPath.hashCode());
-		result = prime * result
-				+ ((this.mimeType == null) ? 0 : this.mimeType.hashCode());
-		result = prime * result
-				+ ((this.name == null) ? 0 : this.name.hashCode());
+		result = prime * result + ((this.exportPath == null) ? 0 : this.exportPath.hashCode());
+		result = prime * result + ((this.mimeType == null) ? 0 : this.mimeType.hashCode());
+		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
 		result = prime * result + this.size;
 		return result;
 	}
@@ -93,6 +158,31 @@ public final class File {
 		return true;
 	}
 
+	public final static String cleanPathName(final Path toClean) {
+		return cleanPathName(toClean.toString());
+	}
+
+	public final static String cleanPathName(final String toClean) {
+		String spaceScrubbed = toClean.replaceAll("\\s", "_");
+		int len = spaceScrubbed.length();
+		StringBuilder cleaned = new StringBuilder(len);
+		for (int iLoop = 0; iLoop < len; iLoop++) {
+			cleaned.append(mapChar(Character.valueOf(spaceScrubbed.charAt(iLoop))));
+		}
+		return cleaned.toString();
+	}
+
+	private final static Character mapChar(final Character toMap) {
+		if (toMap < ' ' || toMap >= 0x7F) {
+			if (CHARACTER_MAP.containsKey(toMap)) {
+				return CHARACTER_MAP.get(toMap);
+			}
+		} else {
+			return toMap;
+		}
+		UNMAPPED.add(toMap);
+		return '_';
+	}
 	static class Builder {
 		private String pth = ""; //$NON-NLS-1$
 		private String nm = ""; //$NON-NLS-1$

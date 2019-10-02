@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.unhcr.archives.esafe.blubaker;
 
@@ -82,7 +82,7 @@ public final class ElementProcessor {
 			break;
 
 		case eleObjectExportPath:
-			this.recBuilder.exportPath(eleValue);
+			this.recBuilder.exportPath(Record.cleanExportPath(eleValue));
 			break;
 
 		case eleObectPath:

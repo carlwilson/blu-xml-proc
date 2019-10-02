@@ -1,6 +1,7 @@
 package org.unhcr.archives.isadg;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -26,8 +27,7 @@ import org.w3c.dom.Element;
  */
 
 public final class IsadG {
-	static DocumentBuilderFactory icFactory = DocumentBuilderFactory
-			.newInstance();
+	static DocumentBuilderFactory icFactory = DocumentBuilderFactory.newInstance();
 	static final String eadNS = "urn:isbn:1-931666-22-9"; //$NON-NLS-1$
 	static final String eadunitid = "ead:unitid"; //$NON-NLS-1$
 	static final String encodinganalog = "encodinganalog"; //$NON-NLS-1$
@@ -40,8 +40,8 @@ public final class IsadG {
 	}
 
 	public static Document toEadXmlDocument(final Path projRoot, final UnitOfDescription uod)
-			throws TransformerFactoryConfigurationError, TransformerException,
-			ParserConfigurationException {
+			throws TransformerFactoryConfigurationError, TransformerException, ParserConfigurationException,
+			IOException {
 		DocumentBuilder icBuilder = icFactory.newDocumentBuilder();
 		Document doc = icBuilder.newDocument();
 
@@ -53,22 +53,19 @@ public final class IsadG {
 		root.appendChild(createHeader(doc, uod));
 		root.appendChild(createArchDesc(doc, uod));
 		doc.appendChild(root);
-		Transformer transformer = TransformerFactory.newInstance()
-				.newTransformer();
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
 		DOMSource source = new DOMSource(doc);
-		File mdDir = new File(projRoot.toString(), "metadata"); //$NON-NLS-1$
-		if (!mdDir.exists()) {
-			mdDir.mkdir();
+		Path mdDir = projRoot.resolve("metadata"); //$NON-NLS-1$
+		if (!Files.exists(mdDir)) {
+			Files.createDirectories(mdDir);
 		}
-		StreamResult streamResult = new StreamResult(
-				new File(mdDir, "series-ead.xml")); //$NON-NLS-1$
+		StreamResult streamResult = new StreamResult(Files.newOutputStream(mdDir.resolve("series-ead.xml"))); //$NON-NLS-1$
 		transformer.transform(source, streamResult);
 		return doc;
 	}
 
-	static Element createHeader(final Document doc,
-			final UnitOfDescription uod) {
+	static Element createHeader(final Document doc, final UnitOfDescription uod) {
 		Element header = createHeaderEle(doc);
 		header.appendChild(createEadIdEle(doc, uod));
 		header.appendChild(createFileDescEle(doc, uod));
@@ -86,16 +83,14 @@ public final class IsadG {
 		return header;
 	}
 
-	static Element createEadIdEle(final Document doc,
-			final UnitOfDescription uod) {
+	static Element createEadIdEle(final Document doc, final UnitOfDescription uod) {
 		Element eadid = doc.createElementNS(eadNS, "ead:eadid"); //$NON-NLS-1$
 		eadid.setAttribute("identifier", uod.details.title); //$NON-NLS-1$
 		eadid.setAttribute(encodinganalog, "identifier"); //$NON-NLS-1$
 		return eadid;
 	}
 
-	static Element createFileDescEle(final Document doc,
-			final UnitOfDescription uod) {
+	static Element createFileDescEle(final Document doc, final UnitOfDescription uod) {
 		Element titleproper = doc.createElementNS(eadNS, "ead:titleproper"); //$NON-NLS-1$
 		titleproper.setTextContent(uod.details.title);
 		Element titlestmt = doc.createElementNS(eadNS, "ead:titlestmt"); //$NON-NLS-1$
@@ -105,16 +100,16 @@ public final class IsadG {
 		return filedesc;
 	}
 
-	static Element createArchDesc(final Document doc,
-			final UnitOfDescription uod) {
+	static Element createArchDesc(final Document doc, final UnitOfDescription uod) {
 		Element archdesc = createArchDescEle(doc, uod);
 		archdesc.appendChild(createDid(doc, uod));
 		addChildren(doc, archdesc, uod);
 		return archdesc;
 	}
-	
+
 	static void addChildren(final Document doc, final Element parent, final UnitOfDescription uod) {
-		if (uod.children.isEmpty()) return;
+		if (uod.children.isEmpty())
+			return;
 		for (UnitOfDescription child : uod.children) {
 			Element c = doc.createElementNS(eadNS, "ead:c"); //$NON-NLS-1$
 			c.setAttribute("level", child.details.levelOfDescription); //$NON-NLS-1$
@@ -127,8 +122,7 @@ public final class IsadG {
 		}
 	}
 
-	static Element createArchDescEle(final Document doc,
-			final UnitOfDescription uod) {
+	static Element createArchDescEle(final Document doc, final UnitOfDescription uod) {
 		Element archdesc = doc.createElementNS(eadNS, "ead:archdesc"); //$NON-NLS-1$
 		archdesc.setAttribute("level", uod.details.levelOfDescription); //$NON-NLS-1$
 		archdesc.setAttribute("relatedencoding", "ISAD(G)v2"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -145,16 +139,14 @@ public final class IsadG {
 		return did;
 	}
 
-	static Element createUnitId(final Document doc,
-			final UnitOfDescription uod) {
+	static Element createUnitId(final Document doc, final UnitOfDescription uod) {
 		Element unitid = doc.createElementNS(eadNS, eadunitid);
 		unitid.setAttribute(encodinganalog, "3.1.1"); //$NON-NLS-1$
 		unitid.setTextContent(uod.identifiers.referenceCode);
 		return unitid;
 	}
 
-	static Element createAltUnitId(final Document doc, final String label,
-			final String value) {
+	static Element createAltUnitId(final Document doc, final String label, final String value) {
 		Element unitid = doc.createElementNS(eadNS, eadunitid);
 		unitid.setAttribute("type", "alternative"); //$NON-NLS-1$ //$NON-NLS-2$
 		unitid.setAttribute("label", label); //$NON-NLS-1$
@@ -162,16 +154,14 @@ public final class IsadG {
 		return unitid;
 	}
 
-	static Element createTitle(final Document doc,
-			final UnitOfDescription uod) {
+	static Element createTitle(final Document doc, final UnitOfDescription uod) {
 		Element unittitle = doc.createElementNS(eadNS, "ead:unittitle"); //$NON-NLS-1$
 		unittitle.setAttribute(encodinganalog, "3.1.2"); //$NON-NLS-1$
 		unittitle.setTextContent(uod.details.title);
 		return unittitle;
 	}
 
-	static Element createDate(final Document doc,
-			final UnitOfDescription uod) {
+	static Element createDate(final Document doc, final UnitOfDescription uod) {
 		Element unittitle = doc.createElementNS(eadNS, "ead:unitdate"); //$NON-NLS-1$
 		unittitle.setAttribute(encodinganalog, "3.1.3"); //$NON-NLS-1$
 		unittitle.setAttribute("datechar", "Creation"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -179,8 +169,7 @@ public final class IsadG {
 		return unittitle;
 	}
 
-	static Element createPhysDesc(final Document doc,
-			final UnitOfDescription uod) {
+	static Element createPhysDesc(final Document doc, final UnitOfDescription uod) {
 		Element extent = doc.createElementNS(eadNS, "ead:extent"); //$NON-NLS-1$
 		extent.setTextContent(String.valueOf(uod.extent.versions));
 		Element dimensions = doc.createElementNS(eadNS, "ead:dimensions"); //$NON-NLS-1$

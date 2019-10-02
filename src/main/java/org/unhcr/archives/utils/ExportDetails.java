@@ -1,7 +1,11 @@
 package org.unhcr.archives.utils;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.text.MessageFormat;
 
 /**
@@ -14,7 +18,7 @@ import java.text.MessageFormat;
  */
 
 public final class ExportDetails {
-
+	static final PathMatcher xmlMatcher = FileSystems.getDefault().getPathMatcher("glob:*.xml");
 	public final Path exportRoot;
 	public final Path dataRoot;
 	public final Path bluExportXml;
@@ -27,7 +31,7 @@ public final class ExportDetails {
 		this.bluExportXml = bluExportXml;
 	}
 
-	public static final ExportDetails instance(final Path exportRoot) {
+	public static final ExportDetails instance(final Path exportRoot) throws IOException {
 		if (exportRoot == null) {
 			throw new IllegalArgumentException("Null exportRoot passed."); //$NON-NLS-1$
 		}
@@ -36,14 +40,20 @@ public final class ExportDetails {
 		}
 		return new ExportDetails(exportRoot, dataRootPath(exportRoot), bluExportXmlPath(exportRoot));
 	}
+	
+	public static final ExportDetails fromValues(final Path exportRoot, final Path dataRoot, final Path bluExportXml) {
+		return new ExportDetails(exportRoot, dataRoot, bluExportXml);
+	}
 
-	private static Path dataRootPath(final Path exportRoot) {
+	private static Path dataRootPath(final Path exportRoot) throws IOException {
 		Path dataRoot = null;
 		int dirCount = 0;
-		for (File child : exportRoot.toFile().listFiles()) {
-			if (child.isDirectory()) {
-				dataRoot = child.toPath();
-				dirCount++;
+		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(exportRoot)) {
+			for (Path child : dirStream) {
+				if (Files.isDirectory(child)) {
+					dataRoot = child;
+					dirCount++;
+				}
 			}
 		}
 		if (dirCount > 1) {
@@ -54,11 +64,12 @@ public final class ExportDetails {
 		return dataRoot;
 	}
 
-	private static Path bluExportXmlPath(final Path exportRoot) {
-		for (File child : exportRoot.toFile().listFiles()) {
-			if (child.isFile()
-					&& child.getName().toLowerCase().endsWith(".xml")) { //$NON-NLS-1$
-				return child.toPath();
+	public static Path bluExportXmlPath(final Path exportRoot) throws IOException {
+		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(exportRoot)) {
+			for (Path child : dirStream) {
+				if (Files.isRegularFile(child) && xmlMatcher.matches(child.getFileName())) {
+					return child;
+				}
 			}
 		}
 		throw new IllegalStateException(MessageFormat.format(

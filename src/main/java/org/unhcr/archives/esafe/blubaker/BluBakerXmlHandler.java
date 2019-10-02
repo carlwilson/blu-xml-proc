@@ -1,13 +1,12 @@
 package org.unhcr.archives.esafe.blubaker;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.unhcr.archives.esafe.blubaker.model.Record;
 import org.unhcr.archives.utils.ExportDetails;
 import org.unhcr.archives.utils.XmlCharBuffer;
 import org.xml.sax.Attributes;
@@ -33,8 +32,7 @@ public final class BluBakerXmlHandler extends DefaultHandler {
 		try {
 			saxParser = spf.newSAXParser();
 		} catch (ParserConfigurationException | SAXException excep) {
-			throw new IllegalStateException(
-					"Couldn't initialise SAX XML Parser.", excep); //$NON-NLS-1$
+			throw new IllegalStateException("Couldn't initialise SAX XML Parser.", excep); //$NON-NLS-1$
 		}
 	}
 	private String currEleName;
@@ -48,13 +46,8 @@ public final class BluBakerXmlHandler extends DefaultHandler {
 	}
 
 	public RecordProcessor processExports() throws IOException, SAXException {
-		File dirToParse = this.recProc.exportDetails.exportRoot.toFile();
-		for (File child : dirToParse.listFiles()) {
-			if (child.isFile()
-					&& child.getName().toLowerCase().endsWith(".xml")) { //$NON-NLS-1$
-				saxParser.parse(child, this);
-			}
-		}
+		saxParser.parse(Files.newInputStream(ExportDetails.bluExportXmlPath(this.recProc.exportDetails.exportRoot)),
+				this);
 		return this.recProc;
 
 	}
@@ -81,21 +74,18 @@ public final class BluBakerXmlHandler extends DefaultHandler {
 
 	@Override
 	public void endElement(String namespaceURI, String sName, // simple name
-			String qName  // qualified name
+			String qName // qualified name
 	) {
 		this.currEleName = deriveEleName(sName, qName);
 		if (ElementProcessor.isRecordEle(this.currEleName)) {
-			Record rec = this.eleProc.buildRecord();
-			this.recProc.addRecord(rec);
+			this.recProc.addRecord(this.eleProc.buildRecord());
 		} else {
-			this.eleProc.processElement(this.currEleName,
-					this.buffer.voidBuffer().trim());
+			this.eleProc.processElement(this.currEleName, this.buffer.voidBuffer());
 		}
 
 	}
 
-	private static String deriveEleName(final String sName,
-			final String qName) {
+	private static String deriveEleName(final String sName, final String qName) {
 		return ("".equals(sName)) ? qName : sName; // element name //$NON-NLS-1$
 	}
 

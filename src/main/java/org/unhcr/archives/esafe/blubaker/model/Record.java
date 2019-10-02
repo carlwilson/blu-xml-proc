@@ -1,12 +1,17 @@
 /**
- * 
+ *
  */
 package org.unhcr.archives.esafe.blubaker.model;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.unhcr.archives.utils.ExportDetails;
 
@@ -20,6 +25,8 @@ public final class Record {
 	public final AuditInfo auditInfo;
 	public final Object object;
 	public final File file;
+	private static final Integer[] containerValues = new Integer[] {0, 201, 202, 298, 412, 751, 10136};
+	public static final Set<Integer> CONTAINER_SUB_TYPES = new HashSet<>(Arrays.asList(containerValues));
 
 	Record(final Details details, final Owner owner, final AuditInfo auditInfo,
 			final Object object, final File file) {
@@ -32,11 +39,11 @@ public final class Record {
 	}
 
 	public boolean isDirectory() {
-		return this.details.subType == 0;
+		return CONTAINER_SUB_TYPES.contains(this.details.subType);
 	}
 
 	public boolean isFile() {
-		return (this.file.size > 0 && !this.file.mimeType.isEmpty());
+		return !this.isDirectory();
 	}
 
 	@Override
@@ -121,15 +128,31 @@ public final class Record {
 
 	public Path getExportRelativePath(final ExportDetails exportDetails) throws BadRecordException {
 		if (!this.isFile()) return null;
-		Path exportRoot = exportDetails.exportRoot;
 		// Get the object export path path from the file
-		Path recExpPath = Paths.get(this.file.exportPath);
+		Path recExpPath = (this.isDirectory()) ? Paths.get(this.object.path.replace(":", "/")) : Paths.get(this.file.exportPath, this.file.name);
 		if (recExpPath.toString().isEmpty()) {
 			throw new BadRecordException(this.details.id, MessageFormat.format(
-					"File record id: {0, number}, name: {1} has no file export path.", //$NON-NLS-1$
+					"File record id: {0, number, #}, name: {1} has no file export path.", //$NON-NLS-1$
 					Integer.valueOf(this.details.id), this.object.name));
 		}
-		return exportRoot.normalize().toAbsolutePath().relativize(recExpPath.normalize().toAbsolutePath());
+		return recExpPath;
+	}
+
+	public static String cleanExportPath(final String exportPath) {
+		String[] pathParts = exportPath.split("\\\\");
+		List<String> cleanParts = new ArrayList<>();
+		// cleanParts.add("objects");
+		boolean entFound = false;
+		for (String part : pathParts) {
+			if (!entFound && !part.equals("Enterprise")) {
+				continue;
+			}
+			entFound = true;
+			cleanParts.add(part);
+		}
+		String [] retVal = new String[cleanParts.size()];
+		retVal = cleanParts.toArray(retVal);
+		return String.join("/", retVal);
 	}
 
 	public static class Builder {
@@ -139,6 +162,31 @@ public final class Record {
 		private Object.Builder objBld = new Object.Builder();
 		private File.Builder flBld = new File.Builder();
 
+		public Builder() {
+			super();
+		}
+
+		public Builder(Record record) {
+			super();
+			this.id(record.details.id);
+			this.parentId(record.details.parentId);
+			this.subType(record.details.subType);
+			this.ownerId(record.owner.id);
+			this.ownerName(record.owner.name);
+			this.created(record.auditInfo.created);
+			this.modified(record.auditInfo.modified);
+			this.createdBy(record.auditInfo.createdBy);
+			this.versionId(record.auditInfo.versionId);
+			this.versions(record.auditInfo.versions);
+			this.maxVersions(record.auditInfo.maxVersions);
+			this.path(record.object.path);
+			this.name(record.object.name);
+			this.description(record.object.description);
+			this.exportPath(record.file.exportPath);
+			this.fileName(record.file.name);
+			this.size(record.file.size);
+			this.mimeType(record.file.mimeType);
+		}
 		public Builder id(final int id) {
 			this.detBld.id(id);
 			return this;
