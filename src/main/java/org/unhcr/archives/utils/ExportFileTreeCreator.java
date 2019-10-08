@@ -3,6 +3,7 @@
  */
 package org.unhcr.archives.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ public final class ExportFileTreeCreator {
 		Path objectsDir = exportDetails.exportRoot.resolve("objects"); //$NON-NLS-1$
 		Files.createDirectories(objectsDir);
 		moveFiles(exportDetails.dataRoot, objectsDir);
+		deleteDir(exportDetails.dataRoot.toFile());
 		return ExportDetails.fromValues(exportDetails.exportRoot, objectsDir, exportDetails.bluExportXml);
 	}
 
@@ -45,5 +47,18 @@ public final class ExportFileTreeCreator {
 				}
 			}
 		}
+	}
+
+	private static void deleteDir(File file) throws IOException {
+		File[] contents = file.listFiles();
+		if (contents != null) {
+			for (File f : contents) {
+				if (f.isFile()) {
+					throw new IOException("Orphaned file found in export directory tree.");
+				}
+				deleteDir(f);
+			}
+		}
+		file.delete();
 	}
 }

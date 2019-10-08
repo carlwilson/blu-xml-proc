@@ -11,7 +11,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 
 import org.unhcr.archives.esafe.blubaker.model.BadRecordException;
@@ -40,7 +39,6 @@ public final class AtomIsadMetadataCsv {
 			"isadg.eventDates", "isadg.eventTypes", "isadg.eventActors", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			"isadg.eventActorHistories" }; //$NON-NLS-1$
 
-	private final CSVWriter csvWriter;
 	private final ExportDetails exportDetails;
 
 	/**
@@ -52,22 +50,23 @@ public final class AtomIsadMetadataCsv {
 	 */
 	public AtomIsadMetadataCsv(final ExportDetails exportDetails) throws IOException {
 		this.exportDetails = exportDetails;
-		this.csvWriter = setupWriter(exportDetails);
 	}
 
-	private static CSVWriter setupWriter(final ExportDetails exportDetails) throws IOException {
-		// Create metadata folder in the export file tree.
-		Path mdDir = exportDetails.exportRoot.resolve("metadata"); //$NON-NLS-1$
-		Files.createDirectories(mdDir);
-
+	/**
+	 * Writes all the records in the passed collection to the CSV file.
+	 *
+	 * @param records a Collection of records to write to the CSV file.
+	 * @throws IOException
+	 */
+	public void writeMetadata(final Collection<Record> records) throws IOException {
+		Path mdDir = createMdDir(this.exportDetails);
 		// Create a new file Writer instance to a metadata.csv file
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(Paths.get(mdDir.toString(), "metadata.csv").toFile()), StandardCharsets.UTF_8)); //$NON-NLS-1$
+				new FileOutputStream(mdDir.resolve("metadata.csv").toFile()), StandardCharsets.UTF_8)); //$NON-NLS-1$
 				// Wrap the writer in a CSV writer
 				CSVWriter csvWriter = new CSVWriter(writer, CSVWriter.DEFAULT_SEPARATOR,
 						CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER,
 						CSVWriter.DEFAULT_LINE_END);) {
-//			writer.write('\ufeff');
 			// Write out the CSV header natively to the writer, this avoids adding quotes
 			// around the header items, ATOM doesn't like them
 			int headerCount = 0;
@@ -75,58 +74,56 @@ public final class AtomIsadMetadataCsv {
 				headerCount++;
 				writer.write(headerEle);
 				if (headerCount < csvHeader.length) {
+					// Skip last element separator
 					writer.write(",");
 				}
 			}
 			writer.write("\n");
-			// Return the CSV Writer to caller
-			return csvWriter;
+
+			// Now cycle through records and write them out 
+			for (Record record : records) {
+				writeRecord(csvWriter, this.exportDetails, record);
+			}
 		}
 	}
 
-	/**
-	 * Writes all the records in the passed collection to the CSV file.
-	 * 
-	 * @param records a Collection of records to write to the CSV file.
-	 */
-	public void writeMetadata(final Collection<Record> records) {
-		for (Record record : records) {
-			this.writeRecord(record);
-		}
-	}
-
-	/**
-	 * Write an individual record to the CSV file
-	 * @param record
-	 */
-	public void writeRecord(final Record record) {
+	private static void writeRecord(final CSVWriter csvWriter, final ExportDetails exportDetails, final Record record) {
 		try {
+			// Get the relative export path and set the string value
 			Path relPath = record.getExportRelativePath(exportDetails);
 			String relPathString = (relPath == null) ? "" : relPath.toString();
 			if (!record.isDirectory()) {
-				this.writeFileRecord(record, relPathString);
+				// Write out a file record
+				writeFileRecord(csvWriter, record, relPathString);
 			} else {
-				this.writeDirRecord(record, relPathString);
+				// Write out a directory record
+				writeDirRecord(csvWriter, record, relPathString);
 			}
 		} catch (BadRecordException excep) {
-			System.err.println(BluXmlProcessor.COL_ERR + excep.getLocalizedMessage()); //$NON-NLS-1$
-			System.out.println(BluXmlProcessor.COL_DEF); //$NON-NLS-1$
+			// Log any bad record exceptions
+			System.err.println(BluXmlProcessor.COL_ERR + excep.getLocalizedMessage()); // $NON-NLS-1$
+			System.out.println(BluXmlProcessor.COL_DEF); // $NON-NLS-1$
 		}
 	}
 
-	private void writeFileRecord(final Record record, final String relPath) {
+	private static void writeFileRecord(final CSVWriter csvWriter, final Record record, final String relPath) {
 		String[] recordMd = new String[] { relPath, Integer.valueOf(record.details.id).toString(),
 				Integer.valueOf(record.details.parentId).toString(), "", Integer.valueOf(record.details.id).toString(),
 				"ACESSIONNO", record.object.name, // $NON-NLS-1$
-				"Item", "UNHCR", record.object.description, "", "", "", "" };
+				"Item", "UNHCR", record.object.description, "", "", "", "", "", "" };
 		csvWriter.writeNext(recordMd);
 	}
 
-	private void writeDirRecord(final Record record, final String relPath) {
+	private static void writeDirRecord(final CSVWriter csvWriter, final Record record, final String relPath) {
 		String[] recordMd = new String[] { relPath, Integer.valueOf(record.details.id).toString(),
 				Integer.valueOf(record.details.parentId).toString(), "", Integer.valueOf(record.details.id).toString(),
 				"ACESSIONNO", record.object.name, // $NON-NLS-1$
-				"File", "UNHCR", record.object.description, "", "", "", "" };
+				"File", "UNHCR", record.object.description, "", "", "", "", "", "" };
 		csvWriter.writeNext(recordMd);
+	}
+
+	private static Path createMdDir(final ExportDetails exportDetails) throws IOException {
+		// Create metadata folder in the export file tree.
+		return Files.createDirectories(exportDetails.exportRoot.resolve("metadata"));
 	}
 }

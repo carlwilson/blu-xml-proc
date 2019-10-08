@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.unhcr.archives.esafe.blubaker.model;
 
@@ -79,10 +79,13 @@ public final class File {
 		retVal.put(Character.valueOf((char) 0x00F4), Character.valueOf((char) 0x006F));
 		return Collections.unmodifiableMap(retVal);
 	}
-	
+
 	public final static Map<Character, Character> CHARACTER_MAP = createCharMap();
 	public final static Set<Character> UNMAPPED = new HashSet<>();
 	public final static Character DEFAULT_CHAR = '_';
+	private final static String spaceRegex = "\\s";
+	private final static String trailingSpaceRegex = "\\s+$";
+	private final static String trailingPathSpaceRegex = "\\s+/";
 	public final String exportPath;
 	public final String name;
 	public final int size;
@@ -163,7 +166,8 @@ public final class File {
 	}
 
 	public final static String cleanPathName(final String toClean) {
-		String spaceScrubbed = toClean.replaceAll("\\s", "_");
+		// Remove trailing space from path elements and replace remaining spaces with underscores
+		String spaceScrubbed = toClean.replaceAll(trailingSpaceRegex, "").replaceAll(trailingPathSpaceRegex, "/").replaceAll(spaceRegex, "_");
 		int len = spaceScrubbed.length();
 		StringBuilder cleaned = new StringBuilder(len);
 		for (int iLoop = 0; iLoop < len; iLoop++) {
@@ -183,6 +187,7 @@ public final class File {
 		UNMAPPED.add(toMap);
 		return '_';
 	}
+
 	static class Builder {
 		private String pth = ""; //$NON-NLS-1$
 		private String nm = ""; //$NON-NLS-1$
