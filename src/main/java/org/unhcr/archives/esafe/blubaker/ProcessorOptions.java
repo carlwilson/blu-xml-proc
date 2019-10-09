@@ -1,8 +1,10 @@
 package org.unhcr.archives.esafe.blubaker;
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +22,7 @@ public final class ProcessorOptions {
 
 	final boolean isAnalyse;
 	final boolean isUsage;
+	final boolean isForce;
 	final Path metadataCsv;
 	final List<Path> toProcess;
 
@@ -28,19 +31,21 @@ public final class ProcessorOptions {
 	 */
 	// private ProcessorOptions(final boolean isEnhanced, final boolean
 	// isToFile, final boolean isUsage, List<File> toProcess) {
-	private ProcessorOptions(final boolean isAnalyse, final boolean isUsage,
+	private ProcessorOptions(final boolean isAnalyse, final boolean isForce, final boolean isUsage,
 			final Path metadataCsv, List<Path> toProcess) {
 		this.isAnalyse = isAnalyse;
 		this.isUsage = isUsage;
+		this.isForce = isForce;
 		this.metadataCsv = metadataCsv;
 		this.toProcess = Collections.unmodifiableList(toProcess);
 	}
 
 	final static ProcessorOptions fromArgs(final String[] args)
-			throws FileNotFoundException {
+			throws IOException {
 		List<Path> toProcess = new ArrayList<>();
 		boolean isUsage = false;
 		boolean isAnalyse = false;
+		boolean isForce = false;
 		boolean inMetadata = false;
 		Path metadataCsv = null;
 		for (String arg : args) {
@@ -51,6 +56,8 @@ public final class ProcessorOptions {
 				isUsage = true;
 			} else if (arg.equals("-a") || arg.equals("--analyse")) { //$NON-NLS-1$ //$NON-NLS-2$
 				isAnalyse = true;
+			} else if (arg.equals("-f") || arg.equals("--force")) { //$NON-NLS-1$ //$NON-NLS-2$
+				isForce = true;
 			} else if (arg.equals("-m") || arg.equals("--metadata")) { //$NON-NLS-1$ //$NON-NLS-2$
 				inMetadata = true;
 			} else {
@@ -67,28 +74,28 @@ public final class ProcessorOptions {
 						"No supplementary CSV metadata provided, terminating."); //$NON-NLS-1$
 			}
 		}
-		return new ProcessorOptions(isAnalyse, isUsage, metadataCsv, toProcess);
+		return new ProcessorOptions(isAnalyse, isForce, isUsage, metadataCsv, toProcess);
 	}
 	
 	private static final Path metadataPath(final String arg) throws FileNotFoundException {
-		File metadataCsv = new File(arg);
-		if (!metadataCsv.isFile()) {
+		Path metadataCsv = Paths.get(arg);
+		if (!Files.isRegularFile(metadataCsv)) {
 			throw new FileNotFoundException(String.format(
 					"Could not find metadata CSV file: %s", //$NON-NLS-1$
-					metadataCsv.getAbsolutePath()));
+					metadataCsv.toString()));
 		}
-		return metadataCsv.toPath();
+		return metadataCsv;
 	}
 
-	private static final Path toProcessPath(final String arg) throws FileNotFoundException {
-		File toTest = new File(arg);
-		if (!toTest.isDirectory()) {
-			String message = (toTest.exists())
+	private static final Path toProcessPath(final String arg) throws IOException {
+		Path toTest = Paths.get(arg);
+		if (!Files.isDirectory(toTest)) {
+			String message = (Files.exists(toTest))
 					? "%s is a file, only directories can be processed." //$NON-NLS-1$
 					: "Could not find directory: %s";  //$NON-NLS-1$
 			throw new FileNotFoundException(
-					String.format(message, toTest.getAbsolutePath()));
+					String.format(message, toTest.toString()));
 		}
-		return toTest.toPath();
+		return toTest;
 	}
 }

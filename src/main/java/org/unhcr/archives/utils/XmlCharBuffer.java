@@ -29,6 +29,10 @@ public final class XmlCharBuffer {
 	 * Add text to the buffer / start a new buffer if necessary
 	 */
 	public void addToBuffer(final String toAdd) {
+		if (toAdd.trim().isEmpty()) {
+			this.textBuffer = new StringBuffer("");
+			return;
+		}
 		if (this.textBuffer == null) {
 			this.textBuffer = new StringBuffer(toAdd);
 		} else {

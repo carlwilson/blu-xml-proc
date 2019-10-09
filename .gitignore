@@ -7,3 +7,5 @@ XT-OEC*
 
 **/old.*
 test-data/
+
+*.class

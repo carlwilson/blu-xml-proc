@@ -27,6 +27,13 @@ public class BadRecordException extends Exception {
 	/**
 	 * 
 	 */
+	public BadRecordException(final String message) {
+		this(-1, message);
+	}
+
+	/**
+	 * 
+	 */
 	public BadRecordException(final int recordId) {
 		super();
 		this.recordId = recordId;

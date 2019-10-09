@@ -1,7 +1,5 @@
 package org.unhcr.archives.utils;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -27,15 +25,6 @@ public final class OutputHandler {
 	 */
 	public OutputHandler() throws UnsupportedEncodingException {
 		this.out = new OutputStreamWriter(System.out, "UTF8"); //$NON-NLS-1$
-	}
-
-	/**
-	 * Constructor to output to a fix file named original_filename.fix
-	 */
-	public OutputHandler(final File xmlFile) throws IOException {
-		File parent = xmlFile.getParentFile();
-		File output = new File(parent, xmlFile.getName() + ".fix"); //$NON-NLS-1$
-		this.out = new FileWriter(output);
 	}
 
 	// ===========================================================
