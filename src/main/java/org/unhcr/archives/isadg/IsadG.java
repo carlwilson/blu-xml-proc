@@ -39,7 +39,7 @@ public final class IsadG {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static Document toEadXmlDocument(final Path projRoot, final UnitOfDescription uod)
+	public static Document toEadXmlDocument(final Path mdDir, final UnitOfDescription uod)
 			throws TransformerFactoryConfigurationError, TransformerException, ParserConfigurationException,
 			IOException {
 		DocumentBuilder icBuilder = icFactory.newDocumentBuilder();
@@ -56,7 +56,6 @@ public final class IsadG {
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
 		DOMSource source = new DOMSource(doc);
-		Path mdDir = projRoot.resolve("metadata"); //$NON-NLS-1$
 		if (!Files.exists(mdDir)) {
 			Files.createDirectories(mdDir);
 		}

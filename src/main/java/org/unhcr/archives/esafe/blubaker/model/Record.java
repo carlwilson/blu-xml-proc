@@ -13,8 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.unhcr.archives.utils.ExportDetails;
-
 /**
  * @author cfw
  *
@@ -126,7 +124,7 @@ public final class Record {
 		return true;
 	}
 
-	public Path getExportRelativePath(final ExportDetails exportDetails) throws BadRecordException {
+	public Path getExportRelativePath() throws BadRecordException {
 		if (!this.isFile()) return null;
 		// Get the object export path path from the file
 		Path recExpPath = (this.isDirectory()) ? Paths.get(this.object.path.replace(":", "/")) : Paths.get(this.file.exportPath, this.file.name);

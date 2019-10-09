@@ -95,7 +95,7 @@ public final class RecordAnalysisResults {
 				if (!record.isDirectory()) {
 					fileCount++;
 					totalSize += record.file.size;
-					Path recPath = record.getExportRelativePath(exportDetails);
+					Path recPath = record.getExportRelativePath();
 					if (!fileFound(recPath, exportDetails)) {
 						missingFileCount++;
 						System.out.println("");

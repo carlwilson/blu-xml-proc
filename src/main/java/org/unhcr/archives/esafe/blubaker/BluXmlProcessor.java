@@ -1,6 +1,7 @@
 package org.unhcr.archives.esafe.blubaker;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
@@ -33,6 +34,7 @@ public final class BluXmlProcessor {
 	public static String COL_ERR = isWin ? "" : (char) 27 + "[31m";
 	public static String COL_WRN = isWin ? "" : (char) 27 + "[33m";
 	public static String COL_DEF = isWin ? "" : (char) 27 + "[39m";
+
 	/**
 	 *
 	 */
@@ -43,9 +45,10 @@ public final class BluXmlProcessor {
 	/**
 	 * @param args
 	 * @throws BadRecordException
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args)
-			throws IOException, TransformerFactoryConfigurationError, NoSuchAlgorithmException, BadRecordException {
+	public static void main(String[] args) throws IOException, TransformerFactoryConfigurationError,
+			NoSuchAlgorithmException, BadRecordException, InterruptedException {
 		try {
 			// Get an options instance from the CLI args
 			ProcessorOptions opts = parseOptions(args);
@@ -83,7 +86,8 @@ public final class BluXmlProcessor {
 	}
 
 	private static void processExport(final ExportDetails exportDetails, SupplementalCsvMetadata metadata,
-			final ProcessorOptions opts) throws NoSuchAlgorithmException, IOException, BadRecordException {
+			final ProcessorOptions opts)
+			throws NoSuchAlgorithmException, IOException, BadRecordException, InterruptedException {
 		// Grab the individual records into a record processor
 		RecordProcessor recordProcessor = parseExportXml(exportDetails);
 		// Analyse the export and detect validity
@@ -112,35 +116,52 @@ public final class BluXmlProcessor {
 	}
 
 	private static void createExportSip(final ExportDetails exportDetails, final RecordProcessor recordProcessor)
-			throws NoSuchAlgorithmException, IOException, BadRecordException {
+			throws IOException, NoSuchAlgorithmException {
+		createMetadata(exportDetails, recordProcessor);
+		createBag(exportDetails, recordProcessor);
+	}
+
+	private static void createMetadata(final ExportDetails exportDetails, final RecordProcessor recordProcessor) throws IOException {
+		// Create the metadata directory
+		Path mdDir = Files.createDirectories(exportDetails.exportRoot.resolve("metadata"));
+		createAtomCsv(mdDir, recordProcessor);
+		createEadXml(mdDir, recordProcessor);
+	}
+
+	private static void createAtomCsv(final Path mdDir, final RecordProcessor recordProcessor) {
 		try {
-			AtomIsadMetadataCsv csvWriter = new AtomIsadMetadataCsv(exportDetails);
-			csvWriter.writeMetadata(recordProcessor.getRecordMap().values());
+			AtomIsadMetadataCsv.writeMetadata(mdDir, recordProcessor.getRecordMap().values());
 		} catch (IOException excep) {
 			excep.printStackTrace();
 			throw new IllegalStateException("I/O Exception raised when writing ATOM metadata file.", //$NON-NLS-1$
 					excep);
 		}
-		UnitOfDescription uod = IsadGTransformer.parseIsadGTree(recordProcessor);
+	}
+
+	private static void createEadXml(final Path mdDir, final RecordProcessor recordProcessor)
+			throws IOException {
 		try {
-			IsadG.toEadXmlDocument(exportDetails.exportRoot, uod);
+			UnitOfDescription uod = IsadGTransformer.parseIsadGTree(recordProcessor);
+			IsadG.toEadXmlDocument(mdDir, uod);
 		} catch (TransformerFactoryConfigurationError | TransformerException | ParserConfigurationException excep) {
 			excep.printStackTrace();
 			throw new IllegalStateException("Exception raised when writing EAD metadata file.", excep); //$NON-NLS-1$
 		}
+	}
+
+	private static void createBag(final ExportDetails exportDetails, final RecordProcessor recordProcessor) throws NoSuchAlgorithmException, IOException {
 		BagStructMaker bagMaker = BagStructMaker.fromPath(exportDetails.exportRoot, recordProcessor.getSize());
 		bagMaker.createBag();
 	}
-
 	private static void usage(final Exception excep) {
 		usage();
-		System.err.println(BluXmlProcessor.COL_ERR + excep.getLocalizedMessage()); //$NON-NLS-1$
+		System.err.println(BluXmlProcessor.COL_ERR + excep.getLocalizedMessage()); // $NON-NLS-1$
 		excep.printStackTrace();
 		if (excep.getCause() != null) {
 			System.err.println(excep.getCause().getLocalizedMessage());
 			System.err.println(excep.getCause().getStackTrace());
 		}
-		System.out.println(BluXmlProcessor.COL_DEF); //$NON-NLS-1$
+		System.out.println(BluXmlProcessor.COL_DEF); // $NON-NLS-1$
 		System.exit(1);
 	}
 

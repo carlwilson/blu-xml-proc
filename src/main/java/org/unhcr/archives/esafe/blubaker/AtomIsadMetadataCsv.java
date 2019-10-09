@@ -9,13 +9,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
 import org.unhcr.archives.esafe.blubaker.model.BadRecordException;
 import org.unhcr.archives.esafe.blubaker.model.Record;
-import org.unhcr.archives.utils.ExportDetails;
 
 import com.opencsv.CSVWriter;
 
@@ -39,17 +37,14 @@ public final class AtomIsadMetadataCsv {
 			"isadg.eventDates", "isadg.eventTypes", "isadg.eventActors", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			"isadg.eventActorHistories" }; //$NON-NLS-1$
 
-	private final ExportDetails exportDetails;
+	// private final ExportDetails exportDetails;
 
 	/**
 	 * Created a new CSV file instance.
 	 * 
-	 * @param exportDetails The details of the BluBaker export to be processed,
-	 *                      really used as a base to write files.
-	 * @throws IOException When there's a problem writing to the CSV file.
 	 */
-	public AtomIsadMetadataCsv(final ExportDetails exportDetails) throws IOException {
-		this.exportDetails = exportDetails;
+	private AtomIsadMetadataCsv() {
+		super();
 	}
 
 	/**
@@ -58,8 +53,7 @@ public final class AtomIsadMetadataCsv {
 	 * @param records a Collection of records to write to the CSV file.
 	 * @throws IOException
 	 */
-	public void writeMetadata(final Collection<Record> records) throws IOException {
-		Path mdDir = createMdDir(this.exportDetails);
+	public static void writeMetadata(final Path mdDir, final Collection<Record> records) throws IOException {
 		// Create a new file Writer instance to a metadata.csv file
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream(mdDir.resolve("metadata.csv").toFile()), StandardCharsets.UTF_8)); //$NON-NLS-1$
@@ -82,15 +76,15 @@ public final class AtomIsadMetadataCsv {
 
 			// Now cycle through records and write them out 
 			for (Record record : records) {
-				writeRecord(csvWriter, this.exportDetails, record);
+				writeRecord(csvWriter, record);
 			}
 		}
 	}
 
-	private static void writeRecord(final CSVWriter csvWriter, final ExportDetails exportDetails, final Record record) {
+	private static void writeRecord(final CSVWriter csvWriter, final Record record) {
 		try {
 			// Get the relative export path and set the string value
-			Path relPath = record.getExportRelativePath(exportDetails);
+			Path relPath = record.getExportRelativePath();
 			String relPathString = (relPath == null) ? "" : relPath.toString();
 			if (!record.isDirectory()) {
 				// Write out a file record
@@ -120,10 +114,5 @@ public final class AtomIsadMetadataCsv {
 				"ACESSIONNO", record.object.name, // $NON-NLS-1$
 				"File", "UNHCR", record.object.description, "", "", "", "", "", "" };
 		csvWriter.writeNext(recordMd);
-	}
-
-	private static Path createMdDir(final ExportDetails exportDetails) throws IOException {
-		// Create metadata folder in the export file tree.
-		return Files.createDirectories(exportDetails.exportRoot.resolve("metadata"));
 	}
 }
