@@ -117,15 +117,20 @@ public final class BluXmlProcessor {
 
 	private static void createExportSip(final ExportDetails exportDetails, final RecordProcessor recordProcessor)
 			throws IOException, NoSuchAlgorithmException {
-		createMetadata(exportDetails, recordProcessor);
+		Path mdDir = getMetadataPath(exportDetails);
+		Files.createDirectories(mdDir);
+		createMetadata(mdDir, recordProcessor);
 		createBag(exportDetails, recordProcessor);
 	}
 
-	private static void createMetadata(final ExportDetails exportDetails, final RecordProcessor recordProcessor) throws IOException {
+	private static void createMetadata(final Path mdDir, final RecordProcessor recordProcessor) throws IOException {
 		// Create the metadata directory
-		Path mdDir = Files.createDirectories(exportDetails.exportRoot.resolve("metadata"));
 		createAtomCsv(mdDir, recordProcessor);
 		createEadXml(mdDir, recordProcessor);
+	}
+
+	private static Path getMetadataPath(final ExportDetails exportDetails) {
+		return exportDetails.exportRoot.resolve("metadata");
 	}
 
 	private static void createAtomCsv(final Path mdDir, final RecordProcessor recordProcessor) {
@@ -153,6 +158,7 @@ public final class BluXmlProcessor {
 		BagStructMaker bagMaker = BagStructMaker.fromPath(exportDetails.exportRoot, recordProcessor.getSize());
 		bagMaker.createBag();
 	}
+
 	private static void usage(final Exception excep) {
 		usage();
 		System.err.println(BluXmlProcessor.COL_ERR + excep.getLocalizedMessage()); // $NON-NLS-1$
