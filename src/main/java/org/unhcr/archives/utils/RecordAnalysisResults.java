@@ -5,9 +5,9 @@ package org.unhcr.archives.utils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 
 import org.unhcr.archives.esafe.blubaker.BluXmlProcessor;
+import org.unhcr.archives.esafe.blubaker.RecordProcessor;
 import org.unhcr.archives.esafe.blubaker.model.BadRecordException;
 import org.unhcr.archives.esafe.blubaker.model.File;
 import org.unhcr.archives.esafe.blubaker.model.Record;
@@ -24,10 +24,11 @@ public final class RecordAnalysisResults {
 	private int missingFileCount = 0;
 	private final Path xmlAnalysed;
 	private final boolean passed;
+	public RecordProcessor cleaned;
 
-	public RecordAnalysisResults(final Map<Integer, Record> recMap, final ExportDetails exportDetails) {
+	public RecordAnalysisResults(final RecordProcessor recProp, final ExportDetails exportDetails) {
 		this.xmlAnalysed = exportDetails.bluExportXml.toAbsolutePath();
-		this.passed = analyse(recMap, exportDetails);
+		this.passed = analyse(recProp, exportDetails);
 	}
 
 	public int getRecordCount() {
@@ -88,15 +89,19 @@ public final class RecordAnalysisResults {
 		System.out.println();
 	}
 
-	private boolean analyse(final Map<Integer, Record> recMap, final ExportDetails exportDetails) {
-		for (Record record : recMap.values()) {
+	private boolean analyse(RecordProcessor recProp, final ExportDetails exportDetails) {
+		this.cleaned = new RecordProcessor(recProp.exportDetails); 
+		for (Record record : recProp.getRecordMap().values()) {
 			try {
 				recordCount++;
 				if (!record.isDirectory()) {
 					fileCount++;
 					totalSize += record.file.size;
 					Path recPath = record.getExportRelativePath();
-					if (!fileFound(recPath, exportDetails)) {
+					if (fileFound(recPath, exportDetails))
+					{
+						this.cleaned.addRecord(record);
+					} else {
 						missingFileCount++;
 						System.out.println("");
 						System.err.println(BluXmlProcessor.COL_ERR); //$NON-NLS-1$
@@ -106,6 +111,9 @@ public final class RecordAnalysisResults {
 						System.out.println("Path: " + recPath);
 						System.out.println(BluXmlProcessor.COL_DEF); //$NON-NLS-1$
 					}
+				} else {
+					System.out.println("Adding directory record with path " + Paths.get("objects", record.getExportRelativePath().toString()));
+					this.cleaned.addRecord(record);
 				}
 			} catch (BadRecordException excep) {
 				missingExportFileCount++;

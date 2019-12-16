@@ -125,7 +125,6 @@ public final class Record {
 	}
 
 	public Path getExportRelativePath() throws BadRecordException {
-		if (!this.isFile()) return null;
 		// Get the object export path path from the file
 		Path recExpPath = (this.isDirectory()) ? Paths.get(this.object.path.replace(":", "/")) : Paths.get(this.file.exportPath, this.file.name);
 		if (recExpPath.toString().isEmpty()) {

@@ -83,6 +83,7 @@ public final class File {
 	public final static Map<Character, Character> CHARACTER_MAP = createCharMap();
 	public final static Set<Character> UNMAPPED = new HashSet<>();
 	public final static Character DEFAULT_CHAR = '_';
+	public final static Character COMMA_CHAR = ',';
 	private final static String spaceRegex = "\\s";
 	private final static String trailingSpaceRegex = "\\s+$";
 	private final static String trailingPathSpaceRegex = "\\s+/";
@@ -166,8 +167,10 @@ public final class File {
 	}
 
 	public final static String cleanPathName(final String toClean) {
-		// Remove trailing space from path elements and replace remaining spaces with underscores
-		String spaceScrubbed = toClean.replaceAll(trailingSpaceRegex, "").replaceAll(trailingPathSpaceRegex, "/").replaceAll(spaceRegex, "_");
+		// Remove trailing space from path elements and replace remaining spaces with
+		// underscores
+		String spaceScrubbed = toClean.replaceAll(trailingSpaceRegex, "").replaceAll(trailingPathSpaceRegex, "/")
+				.replaceAll(spaceRegex, "_").replaceAll(",", "_");
 		int len = spaceScrubbed.length();
 		StringBuilder cleaned = new StringBuilder(len);
 		for (int iLoop = 0; iLoop < len; iLoop++) {

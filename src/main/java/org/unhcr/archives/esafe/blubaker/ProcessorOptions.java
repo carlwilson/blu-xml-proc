@@ -23,7 +23,6 @@ public final class ProcessorOptions {
 	final boolean isAnalyse;
 	final boolean isUsage;
 	final boolean isForce;
-	final Path metadataCsv;
 	final List<Path> toProcess;
 
 	/**
@@ -32,11 +31,10 @@ public final class ProcessorOptions {
 	// private ProcessorOptions(final boolean isEnhanced, final boolean
 	// isToFile, final boolean isUsage, List<File> toProcess) {
 	private ProcessorOptions(final boolean isAnalyse, final boolean isForce, final boolean isUsage,
-			final Path metadataCsv, List<Path> toProcess) {
+			List<Path> toProcess) {
 		this.isAnalyse = isAnalyse;
 		this.isUsage = isUsage;
 		this.isForce = isForce;
-		this.metadataCsv = metadataCsv;
 		this.toProcess = Collections.unmodifiableList(toProcess);
 	}
 
@@ -47,10 +45,8 @@ public final class ProcessorOptions {
 		boolean isAnalyse = false;
 		boolean isForce = false;
 		boolean inMetadata = false;
-		Path metadataCsv = null;
 		for (String arg : args) {
 			if (inMetadata) {
-				metadataCsv = metadataPath(arg);
 				inMetadata = false;
 			} else if (arg.equals("-h") || arg.equals("--help")) { //$NON-NLS-1$ //$NON-NLS-2$
 				isUsage = true;
@@ -69,24 +65,10 @@ public final class ProcessorOptions {
 				throw new IllegalArgumentException(
 						"No export directories to process, terminating."); //$NON-NLS-1$
 			}
-			if (metadataCsv == null) {
-				throw new IllegalArgumentException(
-						"No supplementary CSV metadata provided, terminating."); //$NON-NLS-1$
-			}
 		}
-		return new ProcessorOptions(isAnalyse, isForce, isUsage, metadataCsv, toProcess);
+		return new ProcessorOptions(isAnalyse, isForce, isUsage, toProcess);
 	}
 	
-	private static final Path metadataPath(final String arg) throws FileNotFoundException {
-		Path metadataCsv = Paths.get(arg);
-		if (!Files.isRegularFile(metadataCsv)) {
-			throw new FileNotFoundException(String.format(
-					"Could not find metadata CSV file: %s", //$NON-NLS-1$
-					metadataCsv.toString()));
-		}
-		return metadataCsv;
-	}
-
 	private static final Path toProcessPath(final String arg) throws IOException {
 		Path toTest = Paths.get(arg);
 		if (!Files.isDirectory(toTest)) {

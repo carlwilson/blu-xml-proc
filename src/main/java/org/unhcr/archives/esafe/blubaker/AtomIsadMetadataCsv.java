@@ -10,9 +10,11 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 
 import org.unhcr.archives.esafe.blubaker.model.BadRecordException;
+import org.unhcr.archives.esafe.blubaker.model.File;
 import org.unhcr.archives.esafe.blubaker.model.Record;
 
 import com.opencsv.CSVWriter;
@@ -53,7 +55,8 @@ public final class AtomIsadMetadataCsv {
 	 * @param records a Collection of records to write to the CSV file.
 	 * @throws IOException
 	 */
-	public static void writeMetadata(final Path mdDir, final Collection<Record> records) throws IOException {
+	public static void writeMetadata(final Path mdDir, final Collection<Record> records, final int rootId)
+			throws IOException {
 		// Create a new file Writer instance to a metadata.csv file
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream(mdDir.resolve("metadata.csv").toFile()), StandardCharsets.UTF_8)); //$NON-NLS-1$
@@ -74,24 +77,24 @@ public final class AtomIsadMetadataCsv {
 			}
 			writer.write("\n");
 
-			// Now cycle through records and write them out 
+			// Now cycle through records and write them out
 			for (Record record : records) {
-				writeRecord(csvWriter, record);
+				writeRecord(csvWriter, record, rootId);
 			}
 		}
 	}
 
-	private static void writeRecord(final CSVWriter csvWriter, final Record record) {
+	private static void writeRecord(final CSVWriter csvWriter, final Record record, final int rootId) {
 		try {
 			// Get the relative export path and set the string value
-			Path relPath = record.getExportRelativePath();
+			Path relPath = Paths.get("objects", File.cleanPathName(record.getExportRelativePath().toString()));
 			String relPathString = (relPath == null) ? "" : relPath.toString();
 			if (!record.isDirectory()) {
 				// Write out a file record
 				writeFileRecord(csvWriter, record, relPathString);
 			} else {
 				// Write out a directory record
-				writeDirRecord(csvWriter, record, relPathString);
+				writeDirRecord(csvWriter, record, relPathString, record.details.id == rootId);
 			}
 		} catch (BadRecordException excep) {
 			// Log any bad record exceptions
@@ -103,15 +106,18 @@ public final class AtomIsadMetadataCsv {
 	private static void writeFileRecord(final CSVWriter csvWriter, final Record record, final String relPath) {
 		String[] recordMd = new String[] { relPath, Integer.valueOf(record.details.id).toString(),
 				Integer.valueOf(record.details.parentId).toString(), "", Integer.valueOf(record.details.id).toString(),
-				"ACESSIONNO", record.object.name, // $NON-NLS-1$
+				"ACESSIONNOFILE", record.object.name, // $NON-NLS-1$
 				"Item", "UNHCR", record.object.description, "", "", "", "", "", "" };
 		csvWriter.writeNext(recordMd);
 	}
 
-	private static void writeDirRecord(final CSVWriter csvWriter, final Record record, final String relPath) {
-		String[] recordMd = new String[] { relPath, Integer.valueOf(record.details.id).toString(),
-				Integer.valueOf(record.details.parentId).toString(), "", Integer.valueOf(record.details.id).toString(),
-				"ACESSIONNO", record.object.name, // $NON-NLS-1$
+	private static void writeDirRecord(final CSVWriter csvWriter, final Record record, final String relPath,
+			boolean isRoot) {
+		String dirPath = Paths.get(relPath, File.cleanPathName(record.object.name)).toString();
+		String[] recordMd = new String[] { dirPath, Integer.valueOf(record.details.id).toString(),
+				isRoot ? "" : Integer.valueOf(record.details.parentId).toString(),
+				isRoot ? Integer.valueOf(record.details.parentId).toString() : "",
+				Integer.valueOf(record.details.id).toString(), "ACESSIONNODIR", record.object.name, // $NON-NLS-1$
 				"File", "UNHCR", record.object.description, "", "", "", "", "", "" };
 		csvWriter.writeNext(recordMd);
 	}

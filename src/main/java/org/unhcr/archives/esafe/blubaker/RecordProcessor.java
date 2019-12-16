@@ -25,8 +25,12 @@ public final class RecordProcessor {
 		this.exportDetails = exportDetails;
 	}
 
-	void addRecord(final Record record) {
+	public void addRecord(final Record record) {
 		this.records.put(Integer.valueOf(record.details.id), record);
+	}
+	
+	public void removeRecord(final Record record) {
+		this.records.remove(record.details.id);
 	}
 
 	public int getSize() {
