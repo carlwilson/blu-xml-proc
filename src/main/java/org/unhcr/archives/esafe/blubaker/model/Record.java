@@ -157,14 +157,15 @@ public final class Record {
 		private Owner.Builder ownBld = new Owner.Builder();
 		private AuditInfo.Builder audBld = new AuditInfo.Builder();
 		private Object.Builder objBld = new Object.Builder();
-		private File.Builder flBld = new File.Builder();
+		private File.Builder flBld;
 
-		public Builder() {
+		public Builder(final boolean cleanPaths) {
 			super();
+			this.flBld = new File.Builder(cleanPaths);
 		}
 
-		public Builder(Record record) {
-			super();
+		public Builder(final Record record, final boolean cleanPaths) {
+			this(cleanPaths);
 			this.id(record.details.id);
 			this.parentId(record.details.parentId);
 			this.subType(record.details.subType);

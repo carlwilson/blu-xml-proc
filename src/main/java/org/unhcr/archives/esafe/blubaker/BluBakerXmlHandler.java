@@ -37,11 +37,12 @@ public final class BluBakerXmlHandler extends DefaultHandler {
 	}
 	private String currEleName;
 	private XmlCharBuffer buffer = new XmlCharBuffer();
-	private final ElementProcessor eleProc = new ElementProcessor();
+	private final ElementProcessor eleProc;
 	private final RecordProcessor recProc;
 
 	public BluBakerXmlHandler(final ExportDetails expDets) {
 		super();
+		this.eleProc= new ElementProcessor(expDets.cleanPath);
 		this.recProc = new RecordProcessor(expDets);
 	}
 

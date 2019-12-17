@@ -15,7 +15,7 @@ public final class Details {
 	Details (final int id, final int parentId, final int subType) {
 		super();
 		this.id = id;
-		this.parentId = parentId;
+		this.parentId = Math.abs(parentId);
 		this.subType = subType;
 	}
 	

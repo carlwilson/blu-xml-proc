@@ -22,27 +22,29 @@ public final class ExportDetails {
 	public final Path exportRoot;
 	public final Path dataRoot;
 	public final Path bluExportXml;
+	public final boolean cleanPath;
 
 	private ExportDetails(final Path exportRoot, final Path dataRoot,
-			final Path bluExportXml) {
+			final Path bluExportXml, final boolean cleanPath) {
 		super();
 		this.exportRoot = exportRoot;
 		this.dataRoot = dataRoot;
 		this.bluExportXml = bluExportXml;
+		this.cleanPath = cleanPath;
 	}
 
-	public static final ExportDetails instance(final Path exportRoot) throws IOException {
+	public static final ExportDetails instance(final Path exportRoot, final boolean cleanPath) throws IOException {
 		if (exportRoot == null) {
 			throw new IllegalArgumentException("Null exportRoot passed."); //$NON-NLS-1$
 		}
 		if (!exportRoot.toFile().isDirectory()) {
 			throw new IllegalArgumentException(MessageFormat.format("ExportRoot must be a directory, {0} isn't.", exportRoot.toString())); //$NON-NLS-1$
 		}
-		return new ExportDetails(exportRoot, dataRootPath(exportRoot), bluExportXmlPath(exportRoot));
+		return new ExportDetails(exportRoot, dataRootPath(exportRoot), bluExportXmlPath(exportRoot), cleanPath);
 	}
 	
-	public static final ExportDetails fromValues(final Path exportRoot, final Path dataRoot, final Path bluExportXml) {
-		return new ExportDetails(exportRoot, dataRoot, bluExportXml);
+	public static final ExportDetails fromValues(final Path exportRoot, final Path dataRoot, final Path bluExportXml, final boolean cleanPath) {
+		return new ExportDetails(exportRoot, dataRoot, bluExportXml, cleanPath);
 	}
 
 	private static Path dataRootPath(final Path exportRoot) throws IOException {

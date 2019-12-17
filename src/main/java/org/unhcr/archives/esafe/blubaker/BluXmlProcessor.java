@@ -5,11 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 
+import javax.print.attribute.PrintRequestAttribute;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.unhcr.archives.esafe.blubaker.model.BadRecordException;
+import org.unhcr.archives.esafe.blubaker.model.Record;
 import org.unhcr.archives.isadg.IsadG;
 import org.unhcr.archives.isadg.UnitOfDescription;
 import org.unhcr.archives.utils.BagStructMaker;
@@ -52,8 +54,7 @@ public final class BluXmlProcessor {
 			ProcessorOptions opts = parseOptions(args);
 			// Now process the export paths
 			for (Path toProcess : opts.toProcess) {
-				ExportDetails exportDetails = ExportFileTreeCreator.moveAndCleanTree(ExportDetails.instance(toProcess));
-				processExport(exportDetails, opts);
+				processExport(toProcess, opts);
 			}
 		} catch (IllegalArgumentException | IllegalStateException excep) {
 			usage(excep);
@@ -79,18 +80,33 @@ public final class BluXmlProcessor {
 		throw new IllegalArgumentException("Unknown issue parsing CLI options, terminating."); //$NON-NLS-1$
 	}
 
-	private static void processExport(final ExportDetails exportDetails,
+	private static void processExport(final Path toProcess,
 			final ProcessorOptions opts)
 			throws NoSuchAlgorithmException, IOException, BadRecordException, InterruptedException {
+		ExportDetails exportDetails = ExportDetails.instance(toProcess, false);
 		// Grab the individual records into a record processor
 		RecordProcessor recordProcessor = parseExportXml(exportDetails);
 		// Analyse the export and detect validity
-		RecordAnalysisResults results = analyse(exportDetails, recordProcessor); 
+		RecordAnalysisResults results = new RecordAnalysisResults(recordProcessor, exportDetails);
 		// If this isn't an analysis run AND the export is valid OR the force processing
 		// option is enabled
 		if (!opts.isAnalyse && (results.passedAnalysis() || opts.isForce)) {
+			exportDetails = ExportFileTreeCreator.moveAndCleanTree(ExportDetails.instance(toProcess, true));
+			recordProcessor = parseExportXml(exportDetails);
+			results = new RecordAnalysisResults(recordProcessor, exportDetails);
+			results.printResults();
 			createExportSip(exportDetails, results.cleaned);
+			printRootRecord(recordProcessor.findRoot());
+		} else {
+			results.printResults();
+			printRootRecord(recordProcessor.findRoot());
 		}
+	}
+	
+	private static void printRootRecord(final Record root) {
+		System.out.println("Hierarchy parent is:");
+		System.out.println("  - id: " + root.details.parentId);
+		System.out.println("  - path: " + root.object.path);
 	}
 
 	private static RecordProcessor parseExportXml(final ExportDetails exportDetails) {
@@ -103,18 +119,13 @@ public final class BluXmlProcessor {
 		}
 	}
 
-	private static RecordAnalysisResults analyse(final ExportDetails exportDetails, final RecordProcessor recordProcessor) {
-		RecordAnalysisResults results = new RecordAnalysisResults(recordProcessor, exportDetails);
-		results.printResults();
-		return results;
-	}
-
 	private static void createExportSip(final ExportDetails exportDetails, final RecordProcessor recordProcessor)
 			throws IOException, NoSuchAlgorithmException {
 		Path mdDir = getMetadataPath(exportDetails);
 		Files.createDirectories(mdDir);
 		moveBluExportMd(exportDetails);
 		createMetadata(mdDir, recordProcessor);
+		// Bag creation is currently disabled.
 		// createBag(exportDetails, recordProcessor);
 	}
 

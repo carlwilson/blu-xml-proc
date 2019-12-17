@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 
 /**
  * @author cfw
@@ -25,7 +26,13 @@ public final class ExportFileTreeCreator {
 		Files.createDirectories(objectsDir);
 		moveFiles(exportDetails.dataRoot, objectsDir);
 		deleteDir(exportDetails.dataRoot.toFile());
-		return ExportDetails.fromValues(exportDetails.exportRoot, objectsDir, exportDetails.bluExportXml);
+		if (exportDetails.dataRoot.toFile().exists()) {
+		    Files.walk(exportDetails.dataRoot)
+		        .sorted(Comparator.reverseOrder())
+		        .map(Path::toFile)
+		        .forEach(File::delete);
+		}
+		return ExportDetails.fromValues(exportDetails.exportRoot, objectsDir, exportDetails.bluExportXml, true);
 	}
 
 	private static void moveFiles(final Path sourceDir, final Path destDir) throws IOException {

@@ -85,17 +85,17 @@ public final class File {
 	public final static Character DEFAULT_CHAR = '_';
 	public final static Character COMMA_CHAR = ',';
 	private final static String spaceRegex = "\\s";
-	private final static String trailingSpaceRegex = "\\s+$";
-	private final static String trailingPathSpaceRegex = "\\s+/";
+	private final static String trailingSpaceRegex = spaceRegex + "+$";
+	private final static String trailingPathSpaceRegex = spaceRegex + "+/";
 	public final String exportPath;
 	public final String name;
 	public final int size;
 	public final String mimeType;
 
-	File(final String path, final String name, final int size, final String mimeType) {
+	private File(final String path, final String name, final int size, final String mimeType) {
 		super();
-		this.exportPath = cleanPathName(path);
-		this.name = cleanPathName(name);
+		this.exportPath = path;
+		this.name = name;
 		this.size = size;
 		this.mimeType = mimeType;
 	}
@@ -166,11 +166,15 @@ public final class File {
 		return cleanPathName(toClean.toString());
 	}
 
+	public final static String removeTrailingSpaces(final String toClean) {
+		return toClean.replaceAll(trailingSpaceRegex, "").replaceAll(trailingPathSpaceRegex, "/");
+	}
+
 	public final static String cleanPathName(final String toClean) {
 		// Remove trailing space from path elements and replace remaining spaces with
 		// underscores
-		String spaceScrubbed = toClean.replaceAll(trailingSpaceRegex, "").replaceAll(trailingPathSpaceRegex, "/")
-				.replaceAll(spaceRegex, "_").replaceAll(",", "_");
+		String spaceScrubbed = removeTrailingSpaces(toClean).replaceAll(spaceRegex, DEFAULT_CHAR.toString())
+				.replaceAll(COMMA_CHAR.toString(), DEFAULT_CHAR.toString());
 		int len = spaceScrubbed.length();
 		StringBuilder cleaned = new StringBuilder(len);
 		for (int iLoop = 0; iLoop < len; iLoop++) {
@@ -192,18 +196,28 @@ public final class File {
 	}
 
 	static class Builder {
+		private boolean cleanPaths = false;
 		private String pth = ""; //$NON-NLS-1$
 		private String nm = ""; //$NON-NLS-1$
 		private int sz = -1;
 		private String mme = ""; //$NON-NLS-1$
 
+		public Builder() {
+			this(false);
+		}
+
+		public Builder(final boolean cleanPaths) {
+			super();
+			this.cleanPaths = cleanPaths;
+		}
+
 		public Builder exportPath(final String exportPath) {
-			this.pth = exportPath;
+			this.pth = this.cleanPaths ? cleanPathName(exportPath) : removeTrailingSpaces(exportPath);
 			return this;
 		}
 
 		public Builder name(final String name) {
-			this.nm = name;
+			this.nm = this.cleanPaths ? cleanPathName(name) : removeTrailingSpaces(name);
 			return this;
 		}
 

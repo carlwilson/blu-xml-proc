@@ -41,13 +41,19 @@ public final class ElementProcessor {
 	private Record.Builder recBuilder;
 	private int maxRecNum = 0;
 	private int recCount = 0;
+	
+	private final boolean cleanPaths;
 
 	static boolean isRecordEle(final String eleName) {
 		return eleRecord.equals(eleName);
 	}
+	
+	public ElementProcessor(final boolean cleanPaths) {
+		this.cleanPaths = cleanPaths;
+	}
 
 	public void recordStart(final Attributes atts) {
-		this.recBuilder = new Record.Builder();
+		this.recBuilder = new Record.Builder(this.cleanPaths);
 		this.recBuilder.id(Integer.parseInt(getId(atts)));
 		this.maxRecNum = (Integer.parseInt(getRecNumber(atts)) > this.maxRecNum)
 				? Integer.parseInt(getRecNumber(atts))
